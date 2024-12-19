@@ -14,6 +14,7 @@ double generalSatisfaction = 0;
 double generalCO2 = 0;
 double generalCost = 0;
 float totalDemand = 0.0;
+double wind = 0;
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 int main(int argc, char* argv[])
@@ -22,6 +23,7 @@ int main(int argc, char* argv[])
     SDL_Window* fenetrePrincipale = NULL;
     SDL_Renderer* rendu = NULL;
     SDL_Texture* texture_fond = NULL;
+
 
     SDL_Rect destination;
     //SDL_Event evenement;
@@ -147,7 +149,7 @@ int main(int argc, char* argv[])
     snprintf(message, sizeof(message), "nothing to say");
     
     bool clicked[6] = { false, false, false, false, false, false };
-    int offset = 0;
+    int offsetSin = 0;
 
     SDL_Rect sinusRect = { 850, 150, 300, 200 };
     int amplitude = sinusRect.h / 2 - 10;
@@ -155,9 +157,8 @@ int main(int argc, char* argv[])
     while (running) {
         int startTime = SDL_GetTicks();
         while (hour < 24 && running!=0) {
-            if (SDL_GetTicks() - startTime >= 3000) {
+            if (SDL_GetTicks() - startTime >= 500) { // 1 heure <-> 500 ms ici ( a modifier)
                 hour += 1;
-                
                 startTime = SDL_GetTicks();
             }
             SDL_Event event;
@@ -242,21 +243,21 @@ int main(int argc, char* argv[])
             current_satisfaction(plants);
             current_CO2(plants);
             current_demand(hour);
+            update_production_sun(&plants[1], hour);
+            create_wind();
+            update_production_wind(&plants[2], wind);
+
+
             display_datas(rendu);
 
             SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); // Blanc
             SDL_RenderFillRect(rendu, &sinusRect);
 
             // Dessiner la courbe sinusoïdale dans le rectangle
-            SDL_SetRenderDrawColor(rendu, 255, 0, 0, 255); // Couleur rouge
-            for (int x = 0; x < sinusRect.w; x++) {
-                int y = (int)(amplitude * sin(SIN_FREQUENCY * (x + offset)));
-                y = sinusRect.y + sinusRect.h / 2 - y; // Ajuster l'origine dans le rectangle
-                SDL_RenderDrawPoint(rendu, sinusRect.x + x, y);
-            }
+            draw_sun(rendu, sinusRect, amplitude, hour);
 
             // Mettre à jour le décalage
-            offset += 1;
+            offsetSin += 1;
 
             SDL_RenderPresent(rendu); // fin de la zone d'affichage
             SDL_Delay(16);

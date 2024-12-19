@@ -9,16 +9,46 @@ const char* imageList[] = {
 	"batterie.png",
 };
 
+
+void draw_sun(SDL_Renderer*renderer,SDL_Rect sinusRect,int amplitude, int currentHour) {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Noir
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2,
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2);// Ligne des abscisses
+	
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y ,
+		sinusRect.x + sinusRect.w, sinusRect.y);// Bordure supérieure
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
+		sinusRect.x , sinusRect.y+ sinusRect.h);//Bordure gauche
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y+sinusRect.h,
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h);//Bordure inférieure
+	SDL_RenderDrawLine(renderer, sinusRect.x+ sinusRect.w, sinusRect.y,
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h);// Bordure droite
+	SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Couleur soleil
+
+	double displayPeriod = 12.0; // afficher que les 12 prochaines heures
+	double hoursPerPixel = displayPeriod / sinusRect.w; // Conversion des pixels en heures (par rapport à la période affichée)
+	
+	// Dessiner la sinusoïde
+	SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Couleur orangée (sinusoïde)
+	for (int x = 0; x < sinusRect.w; x++) {
+		double time = currentHour + x * hoursPerPixel; // Heure correspondant au pixel x
+		double value = sin(SIN_FREQUENCY * (time - 7)); // Décalage pour commencer à 7h
+		int y = (int)(amplitude * value);
+		y = sinusRect.y + sinusRect.h / 2 - y; // Ajuster l'origine au centre du rectangle
+		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
+	}
+}
+
 float current_demand(int hour) {
 	totalDemand = 100.0;
-	if (hour <= 20 && hour > 16) { // heure de pointe
-		totalDemand += 100.0;
-	}
-	else if (hour <= 10 && hour > 6) { // matinée
+	if (hour >6 && hour <=10) { // matinée
 		totalDemand += 20.0;
 	}
-	else if (hour <= 16 && hour > 10) { // pause du midi
+	else if (hour >10 && hour <=16) { // pause du midi
 		totalDemand += 50.0;
+	}
+	else if (hour > 16 && hour < 20) { // heure de pointe
+		totalDemand += 100.0;
 	}
 	else if(hour > 20 || hour < 6){ //nuit
 		totalDemand -= 30.0;
@@ -123,9 +153,9 @@ void display_datas(SDL_Renderer*renderer){
 		"Current production : %2.f MWh", 
 		generalCO2, totalProduction);
 	snprintf(description2, sizeof(description2),
-		"Current demand : %.2f MWh" 
+		"Current demand : %.2f MWh  " 
 		"Current satisfaction : %2.f/10",
-		totalDemand, generalSatisfaction);
+		totalDemand, wind);
 	render_text(renderer, font1, description, black, rect_datas1);
 	render_text(renderer, font1, description2, black, rect_datas2);
 	
@@ -143,8 +173,31 @@ void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_
 
 }
 
+void update_production_sun(Energyplant *plant, int currentHour){
+	if (currentHour<7 || currentHour>19) {
+		plant->currentProduction = 0.0;
+	}
+	else {
+		plant->currentProduction = 2 * currentHour;
+	}
+}
+void update_production_wind(Energyplant* plant, int currentWind) {
+	// 0<currentWind<1 donc *100 pour la production
+	plant->currentProduction = currentWind*1000;// Supposons une production linéaire en fonction du vent
+	
+}
 
-void update_production(SDL_Renderer* renderer, Energyplant *plant, enum Buttontype buttontype) {
+void create_wind() {
+	wind = (double)rand() / RAND_MAX;
+	if (wind <= 0.6) {
+		wind = (double)rand() / RAND_MAX * 0.5;  // 60% de probabilité d'être entre 0 et 0.5
+	}
+	else {
+		wind = 0.5 + (double)rand() / RAND_MAX * 0.5; // 40% de probabilité d'être entre 0.5 et 1
+	}
+}
+
+void update_production(Energyplant *plant, enum Buttontype buttontype) {
 
 	if (buttontype == POWER_PLUS) {
 			if (plant->type == FOSSIL || plant->type == HYDRO ||
@@ -234,66 +287,7 @@ void destroyImages() {
 }
 
 
-void drawCircle(SDL_Renderer* renderer, int centerX, int centerY, int radius) {
-	for (int w = 0; w < radius * 2; w++) {
-		for (int h = 0; h < radius * 2; h++) {
-			int dx = radius - w; // distance horizontale par rapport au centre
-			int dy = radius - h; // distance verticale par rapport au centre
-			if ((dx * dx + dy * dy) <= (radius * radius)) {
-				SDL_RenderDrawPoint(renderer, centerX + dx, centerY + dy);
-			}
-		}
-	}
-}
-
 void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) {
 	SDL_Rect rect = { x, y, width, height };
 	SDL_RenderFillRect(renderer, &rect);
 }
-
-void drawStar(SDL_Renderer* renderer, int x, int y, int radius, int numPoints, int size) {
-	double angle = 2 * M_PI / numPoints;
-	for (int i = 0; i < numPoints; i++) {
-		// Calcul des coordonnées des deux points de chaque bras de l'étoile
-		int x1 = x + cos(i * angle) * radius;
-		int y1 = y - sin(i * angle) * radius;
-
-		int x2 = x + cos((i + 1) * angle) * (radius - size);
-		int y2 = y - sin((i + 1) * angle) * (radius - size);
-
-		// Dessiner la ligne entre les deux points
-		SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
-	}
-}
-
-void drawTriangle(SDL_Renderer* renderer, int x1, int y1, int x2, int y2, int x3, int y3) {
-	// Trier les sommets par ordre croissant de y (y1 <= y2 <= y3)
-	if (y1 > y2) { int tmpX = x1, tmpY = y1; x1 = x2; y1 = y2; x2 = tmpX; y2 = tmpY; }
-	if (y2 > y3) { int tmpX = x2, tmpY = y2; x2 = x3; y2 = y3; x3 = tmpX; y3 = tmpY; }
-	if (y1 > y2) { int tmpX = x1, tmpY = y1; x1 = x2; y1 = y2; x2 = tmpX; y2 = tmpY; }
-
-	// Dessiner la partie supérieure du triangle (de y1 à y2)
-	float slope1 = (float)(x2 - x1) / (y2 - y1); // Pente de la ligne gauche
-	float slope2 = (float)(x3 - x1) / (y3 - y1); // Pente de la ligne droite
-
-	float curX1 = x1;
-	float curX2 = x1;
-
-	for (int y = y1; y <= y2; y++) {
-		SDL_RenderDrawLine(renderer, (int)curX1, y, (int)curX2, y);
-		curX1 += slope1;
-		curX2 += slope2;
-	}
-
-	// Dessiner la partie inférieure du triangle (de y2 à y3)
-	slope1 = (float)(x3 - x2) / (y3 - y2);
-
-	curX1 = x2;
-
-	for (int y = y2; y <= y3; y++) {
-		SDL_RenderDrawLine(renderer, (int)curX1, y, (int)curX2, y);
-		curX1 += slope1;
-		curX2 += slope2;
-	}
-}
-

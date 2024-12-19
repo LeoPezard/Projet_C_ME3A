@@ -12,7 +12,7 @@
 #define L_FENETRE 1200
 #define H_FENETRE 800
 #define SIN_AMPLITUDE 100
-#define SIN_FREQUENCY 0.05
+#define SIN_FREQUENCY (2*M_PI/24.0)
 #define SCROLL_SPEED 2
 
 
@@ -67,12 +67,14 @@ double current_satisfaction(Energyplant plants[6]);
 double current_CO2(Energyplant plants[6]);
 float current_demand(int hour);
 
+void create_wind();
+void update_production_sun(Energyplant* plant, int currentHour);
+void update_production_wind(Energyplant* plant, int currentWind);
+
+void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
 void display_datas(SDL_Renderer* renderer);
 void destroyImages();
-void drawCircle(SDL_Renderer* renderer, int centerX, int centerY, int radius);
-void drawTriangle(SDL_Renderer* renderer, int x1, int y1, int x2, int y2, int x3, int y3);
 void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height);
-void drawStar(SDL_Renderer* renderer, int x, int y, int radius, int numPoints, int size);
 void draw_button(SDL_Renderer* renderer, BUTTON button);
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color,
     SDL_Rect position);
@@ -88,7 +90,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
 
 // !!!!!! Une seule plant en paramètre
-void update_production(SDL_Renderer* renderer, Energyplant *plant, enum Buttontype buttontype); 
+void update_production(Energyplant *plant, enum Buttontype buttontype); 
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font1);
 
 
@@ -106,4 +108,7 @@ extern float totalProduction;
 extern double generalSatisfaction;
 extern double generalCO2;
 extern float totalDemand;
+extern SDL_Texture *sunTexture;
+extern SDL_Texture *moonTexture;
+extern double wind;
 #endif

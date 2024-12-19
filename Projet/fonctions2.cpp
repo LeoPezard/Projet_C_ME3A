@@ -111,7 +111,7 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 					else if (buttons[j][i].type == STORAGE_MINUS) {
 						snprintf(message, messageSize, "STORAGE_MINUS clicked on image %d", i + 1);
 					}
-					update_production(renderer, &plants[i], buttons[j][i].type);
+					update_production(&plants[i], buttons[j][i].type);
 				}
 			}
 		}
