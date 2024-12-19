@@ -1,0 +1,14 @@
+﻿  fonctions.cpp
+  fonctions2.cpp
+  main.cpp
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(56,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(96,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(258,10): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(259,10): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(261,10): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(262,10): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(279,14): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(280,14): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\Projet\fonctions.cpp(291,10): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+  Génération de code en cours...
+  Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\ProjetSDL2024\x64\Debug\Projet.exe
