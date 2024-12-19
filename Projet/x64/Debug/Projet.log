@@ -1,8 +1,8 @@
 ﻿  fonctions.cpp
 C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(86,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
 C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(126,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
-  fonctions2.cpp
   main.cpp
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(248,48): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(261,53): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(265,48): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
   Génération de code en cours...
   Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\x64\Debug\Projet.exe

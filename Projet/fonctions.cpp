@@ -84,7 +84,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]) {
 	for (int i = 0; i < 6; i++) {
 		float ratio = plants[i].currentProduction / plants[i].maximumProduction;
-
+	
 		// Définir la couleur en fonction des paliers du ratio
 		if (ratio >= 0.8) {
 			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
@@ -147,7 +147,9 @@ double current_CO2(Energyplant plants[6]) {
 void display_datas(SDL_Renderer*renderer){
 	SDL_Rect rect_datas1 = { 50,175 , L_FENETRE, 50 };
 	SDL_Rect rect_datas2 = { 50,210 , L_FENETRE, 50 };
-	char description[250], description2[150];
+	SDL_Rect rect_datas3 = { 50,245 , L_FENETRE, 50 };
+
+	char description[250], description2[150], description3[150];
 	snprintf(description, sizeof(description), 
 		"Current CO2 emissions : %.2f Kg  "
 		"Current production : %2.f MWh", 
@@ -155,10 +157,13 @@ void display_datas(SDL_Renderer*renderer){
 	snprintf(description2, sizeof(description2),
 		"Current demand : %.2f MWh  " 
 		"Current satisfaction : %2.f/10",
-		totalDemand, wind);
+		totalDemand, generalSatisfaction);
+	snprintf(description3, sizeof(description3),
+		"Actual wind %.2f Km/h  ",
+		wind);
 	render_text(renderer, font1, description, black, rect_datas1);
 	render_text(renderer, font1, description2, black, rect_datas2);
-	
+	render_text(renderer, font1, description3, black, rect_datas3);
 	//render_text(renderer, font1, description, black, rect_datas1);
 
 }
@@ -181,19 +186,20 @@ void update_production_sun(Energyplant *plant, int currentHour){
 		plant->currentProduction = 2 * currentHour;
 	}
 }
+
 void update_production_wind(Energyplant* plant, int currentWind) {
 	// 0<currentWind<1 donc *100 pour la production
-	plant->currentProduction = currentWind*1000;// Supposons une production linéaire en fonction du vent
+	plant->currentProduction = currentWind*2;// Supposons une production linéaire en fonction du vent
 	
 }
 
 void create_wind() {
 	wind = (double)rand() / RAND_MAX;
 	if (wind <= 0.6) {
-		wind = (double)rand() / RAND_MAX * 0.5;  // 60% de probabilité d'être entre 0 et 0.5
+		wind = (double)rand() / RAND_MAX * 60;  // 60% de probabilité d'être entre 0 et 0.5
 	}
 	else {
-		wind = 0.5 + (double)rand() / RAND_MAX * 0.5; // 40% de probabilité d'être entre 0.5 et 1
+		wind = 0.5 + (double)rand() / RAND_MAX * 40; // 40% de probabilité d'être entre 0.5 et 1
 	}
 }
 

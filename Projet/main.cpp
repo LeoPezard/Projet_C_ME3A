@@ -151,6 +151,10 @@ int main(int argc, char* argv[])
     bool clicked[6] = { false, false, false, false, false, false };
     int offsetSin = 0;
 
+    int lastWindUpdateTime = 0;  // Temps de la dernière mise à jour du vent
+    int windUpdateInterval = 1000;
+
+
     SDL_Rect sinusRect = { 850, 150, 300, 200 };
     int amplitude = sinusRect.h / 2 - 10;
 
@@ -216,8 +220,18 @@ int main(int argc, char* argv[])
                 SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
             }
             for (int i = 0; i < 6; i++) {
-                if (clicked[i]) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                if (clicked[i] && (plants[i].type == FOSSIL || plants[i].type == HYDRO)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
                     for (int j = 0; j < 4; j++) {
+                        draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
+                    }
+                }
+                else if (clicked[i] && (plants[i].type == WIND || plants[i].type == SOLAR || plants[i].type == NUCLEAR)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                    for (int j = 2; j < 4; j++) {
+                        draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
+                    }
+                }
+                else if (clicked[i] && (plants[i].type == BATTERY )) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                    for (int j = 0; j < 2; j++) {
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
                 }
@@ -244,7 +258,11 @@ int main(int argc, char* argv[])
             current_CO2(plants);
             current_demand(hour);
             update_production_sun(&plants[1], hour);
-            create_wind();
+
+            if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) {
+                create_wind();  // Créer un nouveau vent
+                lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
+            }
             update_production_wind(&plants[2], wind);
 
 
