@@ -6,9 +6,9 @@
 //
 //int main(int argc, char** argv)
 //{
-//    /* Déclaration des variables */
+//    /* DÃ©claration des variables */
 //
-//    // Déclarations fenetres rendu 
+//    // DÃ©clarations fenetres rendu 
 //    SDL_Window* fenetrePrincipale = NULL, * fenetre2 = NULL;
 //    SDL_Renderer* rendu = NULL, * rendu2 = NULL;
 //    SDL_Texture* texture = NULL;
@@ -19,7 +19,7 @@
 //    int continuer = 1;
 //    SDL_Event evenement;
 //
-//    // Création de la fenêtre
+//    // CrÃ©ation de la fenÃªtre
 //    fenetrePrincipale = SDL_CreateWindow("superProjet", 100, 100, 1000, 500, SDL_WINDOW_SHOWN); // Fenetre principale
 //    fenetre2 = SDL_CreateWindow("FENETRE 2", 1000, 300, 200, 200, SDL_WINDOW_SHOWN);
 //
@@ -44,16 +44,16 @@
 //    // Position et taille du tronc du sapin
 //    SDL_Rect troncSapin = { L_FENETRE / 2 - 25, 400, 50, 100 };
 //
-//    // Rectangle à afficher en haut de la fenêtre après clic
-//    SDL_Rect rectangleHaut = { L_FENETRE / 2 - 50, 50, 100, 50 }; // Nouveau rectangle en haut de la fenêtre
+//    // Rectangle Ã  afficher en haut de la fenÃªtre aprÃ¨s clic
+//    SDL_Rect rectangleHaut = { L_FENETRE / 2 - 50, 50, 100, 50 }; // Nouveau rectangle en haut de la fenÃªtre
 //    int starX = L_FENETRE / 2;
 //    int starY = 50;
 //
 //
 //    /* Corps du jeu */
-//    while (continuer) {  // boucle dont on sort seulement si continuer est mise à 0
-//        SDL_PollEvent(&evenement); // récupération événement depuis la pompe 
-//        switch (evenement.type) { // traitement selon événement 
+//    while (continuer) {  // boucle dont on sort seulement si continuer est mise Ã  0
+//        SDL_PollEvent(&evenement); // rÃ©cupÃ©ration Ã©vÃ©nement depuis la pompe 
+//        switch (evenement.type) { // traitement selon Ã©vÃ©nement 
 //        case SDL_QUIT:
 //            continuer = 0;
 //            break;
@@ -63,19 +63,19 @@
 //                continuer = 0;
 //                break;
 //            case SDLK_g:      // touche g 
-//                // Autres instructions à faire si appui touche ‘g’ 
+//                // Autres instructions Ã  faire si appui touche â€˜gâ€™ 
 //                break;
 //            }
 //            break; // Ajout du break pour fermer le case SDL_KEYDOWN
 //        case SDL_MOUSEBUTTONDOWN:
 //            if (evenement.button.button == SDL_BUTTON_LEFT) {
-//                // Vérifier si le clic est à l'intérieur du tronc du sapin
+//                // VÃ©rifier si le clic est Ã  l'intÃ©rieur du tronc du sapin
 //                if (evenement.button.x >= troncSapin.x && evenement.button.x <= troncSapin.x + troncSapin.w &&
 //                    evenement.button.y >= troncSapin.y && evenement.button.y <= troncSapin.y + troncSapin.h) {
-//                    // Action si le clic est à l'intérieur du tronc
+//                    // Action si le clic est Ã  l'intÃ©rieur du tronc
 //                    printf("Clic sur le pied du sapin !\n");
 //
-//                    // Dessiner le nouveau rectangle en haut de la fenêtre
+//                    // Dessiner le nouveau rectangle en haut de la fenÃªtre
 //                    SDL_SetRenderDrawColor(rendu, 255, 255, 0, 255); // Couleur du rectangle (rouge)
 //                    //SDL_RenderFillRect(rendu, &rectangleHaut); // Dessiner le rectangle
 //                    drawStar(rendu, starX, starY, 30, 5, 5);
@@ -85,13 +85,13 @@
 //                }
 //            }
 //            if (evenement.button.button == SDL_BUTTON_RIGHT) {
-//                // Vérifier si le clic est à l'intérieur du tronc du sapin
+//                // VÃ©rifier si le clic est Ã  l'intÃ©rieur du tronc du sapin
 //                continuer = 0;
 //            }
 //            break; // Ajout du break pour fermer le case SDL_MOUSEBUTTONDOWN
 //        }
 //
-//        /*** Zone de création ***/
+//        /*** Zone de crÃ©ation ***/
 //
 //        // Dessin du sapin
 //        SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255); // Fond noir
@@ -115,7 +115,7 @@
 //    SDL_DestroyWindow(fenetrePrincipale);
 //    SDL_DestroyTexture(texture);
 //
-//    /* Libération de la mémoire SDL */
+//    /* LibÃ©ration de la mÃ©moire SDL */
 //    SDL_Quit();
-//    return 0;
+//  
 //}
