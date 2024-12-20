@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 
 
     Energyplant plants[6] = {
-    {"Coal Power Plant", FOSSIL, 100.0, 50.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 400, 200,
+    {"Gas Power Plant", FOSSIL, 9.54, 7.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 400, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Solar Power Plant", SOLAR, 100.0, 75.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
+    {"Solar Power Plant", SOLAR, 6.36, 3.1, 0.0, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Wind Power Plant", WIND, 100.0, 90.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
+    {"Wind Power Plant", WIND, 6.36, 2.1, 0.0, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Nuclear Power Plant", NUCLEAR, 100.0, 20.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
+    {"Nuclear Power Plant", NUCLEAR, 63.6, 20.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Hydraulic Power Plant", HYDRO, 100.0, 60.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
+    {"Hydraulic Power Plant", HYDRO, 15.9, 6.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -225,7 +225,8 @@ int main(int argc, char* argv[])
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
                 }
-                else if (clicked[i] && (plants[i].type == WIND || plants[i].type == SOLAR || plants[i].type == NUCLEAR)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                else if (clicked[i] && (plants[i].type == WIND || plants[i].type == SOLAR || 
+                    plants[i].type == NUCLEAR)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
                     for (int j = 2; j < 4; j++) {
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }

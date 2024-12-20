@@ -152,10 +152,10 @@ void display_datas(SDL_Renderer*renderer){
 	char description[250], description2[150], description3[150];
 	snprintf(description, sizeof(description), 
 		"Current CO2 emissions : %.2f Kg  "
-		"Current production : %2.f MWh", 
+		"Current production : %2.f GWh", 
 		generalCO2, totalProduction);
 	snprintf(description2, sizeof(description2),
-		"Current demand : %.2f MWh  " 
+		"Current demand : %.2f GWh  " 
 		"Current satisfaction : %2.f/10",
 		totalDemand, generalSatisfaction);
 	snprintf(description3, sizeof(description3),
@@ -172,39 +172,33 @@ void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_
 	for (int i = 0; i < 6; i++) {
 		SDL_Rect rect_description = { plants[i].x + 10, plants[i].y , plants[i].width, 50 };
 		char description[128];
-		snprintf(description, sizeof(description), "Power : %.2f KWh", plants[i].currentProduction);
+		snprintf(description, sizeof(description), "Power : %.2f GWh", plants[i].currentProduction);
 		render_text(renderer, font1, description, white, rect_description);
 	}
 
 }
 
-void update_production_sun(Energyplant *plant, int currentHour){
-	if (currentHour<7 || currentHour>19) {
-		plant->currentProduction = 0.0;
-	}
-	else {
-		plant->currentProduction = 2 * currentHour;
-	}
+void update_production_sun(Energyplant *plant, int currentHour){ // Elle marche
+	plant->currentProduction = 6.36f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
+
 }
 
-void update_production_wind(Energyplant* plant, int currentWind) {
-	// 0<currentWind<1 donc *100 pour la production
-	plant->currentProduction = currentWind*2;// Supposons une production linéaire en fonction du vent
+void update_production_wind(Energyplant* plant, int currentWind) { // Elle marche
+	plant->currentProduction = 6.36f * (wind/100);
+}
+
+void create_wind() { // Elle marche
+	wind = (double)rand() / RAND_MAX;
+	if (wind <= 0.6) {
+		wind = (double)rand() / RAND_MAX * 60;
+	}
+	else {
+		wind = 0.5 + (double)rand() / RAND_MAX * 40;
+	}
 	
 }
 
-void create_wind() {
-	wind = (double)rand() / RAND_MAX;
-	if (wind <= 0.6) {
-		wind = (double)rand() / RAND_MAX * 60;  // 60% de probabilité d'être entre 0 et 0.5
-	}
-	else {
-		wind = 0.5 + (double)rand() / RAND_MAX * 40; // 40% de probabilité d'être entre 0.5 et 1
-	}
-}
-
 void update_production(Energyplant *plant, enum Buttontype buttontype) {
-
 	if (buttontype == POWER_PLUS) {
 			if (plant->type == FOSSIL || plant->type == HYDRO ||
 				plant->type == BATTERY) {
@@ -259,7 +253,6 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	textRect.w = 0; textRect.h = 0;
 	if (label == "QUIT") {
 		textRect.x = button.rect.x +10; textRect.y = button.rect.y;
-
 	}
 	render_text(renderer, font1, label, black, textRect);
 }
