@@ -36,13 +36,24 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 					/*snprintf(message, messageSize, "QUIT");*/
 					running = 0;
 				}
-				if (appButtons[i].type == POWER_PLUS) {
-					snprintf(message, messageSize, "Power Plus");
-
+				if (appButtons[i].type == FASTER) {
+					if (realTime > 300) {
+						realTime -= 300;
+						if (realTime < 300) {
+							realTime = 300;
+						}
+					}
+					snprintf(message, messageSize, "Faster %d", realTime);
 				}
-				if (appButtons[i].type == POWER_MINUS) {
-					snprintf(message, messageSize, "Power minus");
 
+				if (appButtons[i].type == SLOWER) {
+					if (realTime < 5000) {
+						realTime += 300;
+						if (realTime > 5000) {
+							realTime = 5000;
+						}
+					}
+					snprintf(message, messageSize, "Slower %d", realTime);
 				}
 
 			}

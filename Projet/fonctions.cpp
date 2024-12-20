@@ -7,7 +7,8 @@ const char* imageList[] = {
 	"nucleaire.png",
 	"hydro.png",
 	"batterie.png",
-	"charbon.png"
+	"charbon.png",
+	"tv.png"
 };
 
 
@@ -153,6 +154,14 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	{
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	}
+	else if (button.type == FASTER)
+	{
+		SDL_SetRenderDrawColor(renderer, 255,165, 0, 255);
+	}
+	else if (button.type == SLOWER)
+	{
+		SDL_SetRenderDrawColor(renderer, 173, 216, 230, 255);
+	}
 	SDL_RenderFillRect(renderer, &button.rect);
 
 	//affiche le text du bouton en fonction du type de bouton
@@ -164,12 +173,14 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	case STORAGE_PLUS: label = "+"; break;
 	case STORAGE_MINUS: label = "-"; break;
 	case QUIT: label = "QUIT"; break;
+	case FASTER: label = "Faster"; break;
+	case SLOWER: label = "Slower"; break;
 	}
 	SDL_Color black = { 0, 0, 0, 255 };
 	SDL_Rect textRect;
 	textRect.x = button.rect.x + button.rect.w / 2 - 4; textRect.y = button.rect.y + button.rect.h / 2 - 12;
 	textRect.w = 0; textRect.h = 0;
-	if (label == "QUIT") {
+	if (label == "QUIT" || label == "Faster" || label == "Slower") {
 		textRect.x = button.rect.x + 10; textRect.y = button.rect.y;
 	}
 	render_text(renderer, font1, label, black, textRect);
@@ -268,6 +279,8 @@ void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) 
 	SDL_Rect rect = { x, y, width, height };
 	SDL_RenderFillRect(renderer, &rect);
 }
+
+
 
 void display_datas(SDL_Renderer*renderer){
 	SDL_Rect rect_datas1 = { 50,175 , L_FENETRE, 50 };

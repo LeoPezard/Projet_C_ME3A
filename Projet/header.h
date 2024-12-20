@@ -22,7 +22,7 @@
 
 
 // Enums
-enum Buttontype { POWER_PLUS, POWER_MINUS, STORAGE_PLUS, STORAGE_MINUS, QUIT};
+enum Buttontype { POWER_PLUS, POWER_MINUS, STORAGE_PLUS, STORAGE_MINUS, QUIT, FASTER, SLOWER};
 enum EnergyType { WIND, FOSSIL, SOLAR, HYDRO, BATTERY, NUCLEAR };
 
 // Structures
@@ -76,7 +76,6 @@ void update_production_wind(Energyplant* plant, int currentWind);
 double current_cost(Energyplant plants[6]);
 void update_cost(Energyplant plants[6]);
 void update_co2(Energyplant plants[6]);
-
 void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
 void display_datas(SDL_Renderer* renderer);
 void destroyImages();
@@ -99,8 +98,7 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 void update_production(Energyplant *plant, enum Buttontype buttontype); 
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font1);
 
-
-
+extern int realTime;
 extern TTF_Font* font1;
 extern Image images[6];
 extern const char* imageList[];
@@ -118,4 +116,7 @@ extern double cost;
 extern SDL_Texture *sunTexture;
 extern SDL_Texture *moonTexture;
 extern double wind;
+
+
+
 #endif
