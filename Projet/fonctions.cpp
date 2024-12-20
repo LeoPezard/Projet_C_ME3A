@@ -1,15 +1,179 @@
 #include "header.h"
 
 const char* imageList[] = {
-	"charbon.png",
+	"gaz.png",
 	"solaire.png",
 	"eolienne.png",
 	"nucleaire.png",
 	"hydro.png",
 	"batterie.png",
+	"charbon.png"
 };
 
 
+void update_production(Energyplant* plant, enum Buttontype buttontype) {
+	if (buttontype == POWER_PLUS) {
+		if (plant->type == FOSSIL || plant->type == HYDRO ||
+			plant->type == BATTERY) {
+			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
+			plant->co2 = (5.0 / 100) * plant->currentProduction; //  TODO : trouver relation
+		}
+	}
+	else if (buttontype == POWER_MINUS) {
+		if (plant->type == FOSSIL || plant->type == HYDRO ||
+			plant->type == BATTERY) {
+			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
+			
+		}
+	}
+	if (plant->currentProduction > plant->maximumProduction) {
+		plant->currentProduction = plant->maximumProduction;
+	}
+	else if (plant->currentProduction < 0) {
+		plant->currentProduction = 0;
+	}
+}
+void update_co2(Energyplant plants[6]) {
+	for (int i = 0; i < 5;i++) {
+		if (plants[i].type == FOSSIL) {
+			plants[i].co2 = 418 * plants[i].currentProduction; // 0.418 kg/kwh
+		}
+		else if (plants[i].type == SOLAR) {
+			plants[i].co2 = 43.9 * plants[i].currentProduction; // 0.0439 kg/kwh
+		}
+		else if (plants[i].type == WIND) {
+			plants[i].co2 = 14.1 * plants[i].currentProduction; // 0.0141 kg/kwh
+		}
+		else if (plants[i].type == HYDRO) {
+			plants[i].co2 = 6 * plants[i].currentProduction; // 0.006 kg/kwh
+		}
+		else if (plants[i].type == NUCLEAR) {
+			plants[i].co2 = 10 * plants[i].currentProduction; // 0.01 kg/kwh
+		}
+	}
+}
+void update_cost(Energyplant plants[6]) {
+	for (int i = 0; i < 6; i++) {
+		if (plants[i].type == FOSSIL) {
+			plants[i].cost = plants[i].currentProduction * 40;
+		}
+		else if (plants[i].type == SOLAR) {
+			plants[i].cost = plants[i].currentProduction * 75;
+		}
+		else if (plants[i].type == WIND) {
+			plants[i].cost = plants[i].currentProduction * 60;
+		}
+		else if (plants[i].type == NUCLEAR) {
+			plants[i].cost = plants[i].currentProduction * 70;
+		}
+		else if (plants[i].type == HYDRO) {
+			plants[i].cost = plants[i].currentProduction * 20;
+		}
+		else if (plants[i].type == BATTERY) {
+			plants[i].cost = plants[i].currentProduction * 150;
+		}
+	}
+}
+void update_production_sun(Energyplant* plant, int currentHour) { // Elle marche
+	plant->currentProduction = 6.36f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
+
+}
+void update_production_wind(Energyplant* plant, int currentWind) { // Elle marche
+	plant->currentProduction = 6.36f * (wind / 100);
+}
+
+double current_cost(Energyplant plants[6]) {
+	cost = 0;
+	for (int i = 0; i < 6; i++) {
+		cost += plants[i].cost;
+	}
+	return cost;
+}
+float current_demand(int hour) { // en MW (données de la france)
+	if (hour >1 && hour <= 10) { // augmentation progressive jusqu'à midi
+		totalDemand += (hour - 1) * 4000; // chaque heure augmente de 4000 MW
+	}
+	else if (hour > 10 && hour <= 16) { // stabilisation dans la journée
+		totalDemand = 71000.0; // plateau autour de 71000 MW
+	}
+	else if (hour > 16 && hour <= 20) { // pic en soirée
+		totalDemand = 75000.0; // pic maximal vers 18-20h
+	}
+	else if (hour > 20 || hour <= 1) { // baisse progressive la nuit
+		totalDemand = 35000.0; // stabilisation la nuit
+	}
+	totalDemand = (totalDemand/11.4)/24.0; // convertie en donné PACA puis en MWh
+	return totalDemand;
+}
+double current_CO2(Energyplant plants[6]) {
+	generalCO2 = 0;
+	for (int i = 0; i < 6; i++) {
+		generalCO2 += plants[i].co2;
+	}
+	return generalCO2;
+}
+float current_production(Energyplant plants[6]) {
+	totalProduction = 0;
+	for (int i = 0; i < 6; i++) {
+		totalProduction += plants[i].currentProduction;
+	}
+	return totalProduction;
+}
+double current_satisfaction(Energyplant plants[6]) {
+	generalSatisfaction = 0;
+	for (int i = 0; i < 6; i++) {
+		generalSatisfaction += plants[i].statisfaction;
+	}
+	return generalSatisfaction / 6;
+}
+
+void create_wind() { // Elle marche
+	wind = (double)rand() / RAND_MAX;
+	if (wind <= 0.6) {
+		wind = (double)rand() / RAND_MAX * 60;
+	}
+	else {
+		wind = 0.5 + (double)rand() / RAND_MAX * 40;
+	}
+
+}
+
+void draw_button(SDL_Renderer* renderer, BUTTON button)
+{
+	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+	if (button.type == POWER_PLUS)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	}
+	else if (button.type == POWER_MINUS)
+	{
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	}
+	else if (button.type == QUIT)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	}
+	SDL_RenderFillRect(renderer, &button.rect);
+
+	//affiche le text du bouton en fonction du type de bouton
+	const char* label = "";
+	switch (button.type)
+	{
+	case POWER_PLUS: label = "+"; break;
+	case POWER_MINUS: label = "-"; break;
+	case STORAGE_PLUS: label = "+"; break;
+	case STORAGE_MINUS: label = "-"; break;
+	case QUIT: label = "QUIT"; break;
+	}
+	SDL_Color black = { 0, 0, 0, 255 };
+	SDL_Rect textRect;
+	textRect.x = button.rect.x + button.rect.w / 2 - 4; textRect.y = button.rect.y + button.rect.h / 2 - 12;
+	textRect.w = 0; textRect.h = 0;
+	if (label == "QUIT") {
+		textRect.x = button.rect.x + 10; textRect.y = button.rect.y;
+	}
+	render_text(renderer, font1, label, black, textRect);
+}
 void draw_sun(SDL_Renderer*renderer,SDL_Rect sinusRect,int amplitude, int currentHour) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Noir
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2,
@@ -38,24 +202,6 @@ void draw_sun(SDL_Renderer*renderer,SDL_Rect sinusRect,int amplitude, int curren
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
 	}
 }
-
-float current_demand(int hour) {
-	totalDemand = 100.0;
-	if (hour >6 && hour <=10) { // matinée
-		totalDemand += 20.0;
-	}
-	else if (hour >10 && hour <=16) { // pause du midi
-		totalDemand += 50.0;
-	}
-	else if (hour > 16 && hour < 20) { // heure de pointe
-		totalDemand += 100.0;
-	}
-	else if(hour > 20 || hour < 6){ //nuit
-		totalDemand -= 30.0;
-	}
-	return totalDemand;
-}
-
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 	for (int i = 0; i < 6; i++) {
 		char path[128];
@@ -80,7 +226,6 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 	}
 
 }
-
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]) {
 	for (int i = 0; i < 6; i++) {
 		float ratio = plants[i].currentProduction / plants[i].maximumProduction;
@@ -119,29 +264,9 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 		SDL_RenderDrawRect(renderer, &border);
 	}
 }
-
-float current_production(Energyplant plants[6]) {
-	totalProduction = 0;
-	for (int i = 0; i < 6; i++) {
-		totalProduction += plants[i].currentProduction;
-	}
-	return totalProduction;
-}
-
-double current_satisfaction(Energyplant plants[6]) {
-	generalSatisfaction = 0;
-	for (int i = 0; i < 6; i++) {
-		generalSatisfaction += plants[i].statisfaction;
-	}
-	return generalSatisfaction/6;
-}
-
-double current_CO2(Energyplant plants[6]) {
-	generalCO2 = 0;
-	for (int i = 0; i < 6; i++) {
-		generalCO2 += plants[i].co2;
-	}
-	return generalCO2;
+void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) {
+	SDL_Rect rect = { x, y, width, height };
+	SDL_RenderFillRect(renderer, &rect);
 }
 
 void display_datas(SDL_Renderer*renderer){
@@ -152,111 +277,31 @@ void display_datas(SDL_Renderer*renderer){
 	char description[250], description2[150], description3[150];
 	snprintf(description, sizeof(description), 
 		"Current CO2 emissions : %.2f Kg  "
-		"Current production : %2.f GWh", 
+		"Current production : %2.f MWh", 
 		generalCO2, totalProduction);
 	snprintf(description2, sizeof(description2),
-		"Current demand : %.2f GWh  " 
+		"Current demand : %.2f MWh  " 
 		"Current satisfaction : %2.f/10",
 		totalDemand, generalSatisfaction);
 	snprintf(description3, sizeof(description3),
-		"Actual wind %.2f Km/h  ",
-		wind);
+		"Actual wind %.2f Km/h  "
+		" Current cost : %2.f euros",
+		wind, cost);
 	render_text(renderer, font1, description, black, rect_datas1);
 	render_text(renderer, font1, description2, black, rect_datas2);
 	render_text(renderer, font1, description3, black, rect_datas3);
 	//render_text(renderer, font1, description, black, rect_datas1);
 
 }
-
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font*font1) {
 	for (int i = 0; i < 6; i++) {
-		SDL_Rect rect_description = { plants[i].x + 10, plants[i].y , plants[i].width, 50 };
+		SDL_Rect rect_description = { plants[i].x +10, plants[i].y-15 , plants[i].width, 50};
 		char description[128];
-		snprintf(description, sizeof(description), "Power : %.2f GWh", plants[i].currentProduction);
+		snprintf(description, sizeof(description), "Power : %.2f MWh", plants[i].currentProduction);
 		render_text(renderer, font1, description, white, rect_description);
 	}
 
 }
-
-void update_production_sun(Energyplant *plant, int currentHour){ // Elle marche
-	plant->currentProduction = 6.36f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
-
-}
-
-void update_production_wind(Energyplant* plant, int currentWind) { // Elle marche
-	plant->currentProduction = 6.36f * (wind/100);
-}
-
-void create_wind() { // Elle marche
-	wind = (double)rand() / RAND_MAX;
-	if (wind <= 0.6) {
-		wind = (double)rand() / RAND_MAX * 60;
-	}
-	else {
-		wind = 0.5 + (double)rand() / RAND_MAX * 40;
-	}
-	
-}
-
-void update_production(Energyplant *plant, enum Buttontype buttontype) {
-	if (buttontype == POWER_PLUS) {
-			if (plant->type == FOSSIL || plant->type == HYDRO ||
-				plant->type == BATTERY) {
-				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-				plant->co2 = (5.0 / 100) * plant->currentProduction; //  TODO : trouver relation
-			}
-	}
-	else if (buttontype == POWER_MINUS) {
-			if (plant->type == FOSSIL || plant->type == HYDRO ||
-				plant->type == BATTERY) {
-				plant->currentProduction -= (5.0/ 100) * plant->maximumProduction;
-			}
-		}
-	if (plant->currentProduction > plant->maximumProduction) {
-		plant->currentProduction = plant->maximumProduction;
-	}
-	else if (plant->currentProduction < 0) {
-		plant->currentProduction = 0;
-	}
-}
-
-void draw_button(SDL_Renderer* renderer, BUTTON button)
-{
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-	if (button.type == POWER_PLUS)
-	{
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	}
-	else if (button.type == POWER_MINUS)
-	{
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	}
-	else if (button.type == QUIT)
-	{
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	}
-	SDL_RenderFillRect(renderer, &button.rect);
-
-	//affiche le text du bouton en fonction du type de bouton
-	const char* label = "";
-	switch (button.type)
-	{
-	case POWER_PLUS: label = "+"; break;
-	case POWER_MINUS: label = "-"; break;
-	case STORAGE_PLUS: label = "+"; break;
-	case STORAGE_MINUS: label = "-"; break;
-	case QUIT: label = "QUIT"; break;
-	}
-	SDL_Color black = { 0, 0, 0, 255 };
-	SDL_Rect textRect;
-	textRect.x = button.rect.x + button.rect.w / 2 - 4; textRect.y = button.rect.y + button.rect.h / 2 - 12;
-	textRect.w = 0; textRect.h = 0;
-	if (label == "QUIT") {
-		textRect.x = button.rect.x +10; textRect.y = button.rect.y;
-	}
-	render_text(renderer, font1, label, black, textRect);
-}
-
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color, SDL_Rect position)
 {
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
@@ -286,7 +331,3 @@ void destroyImages() {
 }
 
 
-void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) {
-	SDL_Rect rect = { x, y, width, height };
-	SDL_RenderFillRect(renderer, &rect);
-}

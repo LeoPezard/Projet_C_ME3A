@@ -73,6 +73,9 @@ float current_demand(int hour);
 void create_wind();
 void update_production_sun(Energyplant* plant, int currentHour);
 void update_production_wind(Energyplant* plant, int currentWind);
+double current_cost(Energyplant plants[6]);
+void update_cost(Energyplant plants[6]);
+void update_co2(Energyplant plants[6]);
 
 void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
 void display_datas(SDL_Renderer* renderer);
@@ -111,6 +114,7 @@ extern float totalProduction;
 extern double generalSatisfaction;
 extern double generalCO2;
 extern float totalDemand;
+extern double cost;
 extern SDL_Texture *sunTexture;
 extern SDL_Texture *moonTexture;
 extern double wind;

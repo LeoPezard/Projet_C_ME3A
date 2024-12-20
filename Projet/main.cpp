@@ -13,8 +13,10 @@ float totalProduction = 0;
 double generalSatisfaction = 0;
 double generalCO2 = 0;
 double generalCost = 0;
-float totalDemand = 0.0;
+//float totalDemand = 200.3;
+float totalDemand = 55000.0; // demande minimale (nuit, avant 6h)
 double wind = 0;
+double cost = 0;
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 int main(int argc, char* argv[])
@@ -35,7 +37,7 @@ int main(int argc, char* argv[])
 
 
     Energyplant plants[6] = {
-    {"Gas Power Plant", FOSSIL, 9.54, 7.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 400, 200,
+    {"Gas Power Plant", FOSSIL, 300.0, 28.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -43,7 +45,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Solar Power Plant", SOLAR, 6.36, 3.1, 0.0, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
+    {"Solar Power Plant", SOLAR, 50.0, 18.24, 0.0, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -51,7 +53,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Wind Power Plant", WIND, 6.36, 2.1, 0.0, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
+    {"Wind Power Plant", WIND, 60.0, 18.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -59,7 +61,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Nuclear Power Plant", NUCLEAR, 63.6, 20.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
+    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6, 0.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -67,7 +69,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Hydraulic Power Plant", HYDRO, 15.9, 6.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
+    {"Hydraulic Power Plant", HYDRO, 100.0, 48.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -75,7 +77,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Battery Power Plant", BATTERY, 100.0, 95.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 1000, 425, 200, 200,
+    {"Battery Power Plant", BATTERY, 50.0, 25.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 1000, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -161,7 +163,7 @@ int main(int argc, char* argv[])
     while (running) {
         int startTime = SDL_GetTicks();
         while (hour < 24 && running!=0) {
-            if (SDL_GetTicks() - startTime >= 500) { // 1 heure <-> 500 ms ici ( a modifier)
+            if (SDL_GetTicks() - startTime >= 2000) { // 1 heure <-> 500 ms ici ( a modifier)
                 hour += 1;
                 startTime = SDL_GetTicks();
             }
@@ -213,7 +215,6 @@ int main(int argc, char* argv[])
             destination.h = H_FENETRE;
             destination.w = L_FENETRE;
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
-
             draw_energy_plant_production(rendu, plants);
             legend_plant_production(rendu, plants, font1);
             for (int i = 0; i < 6; i++) {
@@ -256,8 +257,11 @@ int main(int argc, char* argv[])
             render_text(rendu, font2, hour_text, black, HourRect);
             current_production(plants);
             current_satisfaction(plants);
+            update_co2(plants);
             current_CO2(plants);
             current_demand(hour);
+            update_cost(plants);
+            current_cost(plants);
             update_production_sun(&plants[1], hour);
 
             if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) {
