@@ -8,6 +8,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <math.h>
+#include<time.h>
 
 #define L_FENETRE 1200
 #define H_FENETRE 800
@@ -15,6 +16,8 @@
 #define SIN_AMPLITUDE 100
 #define SIN_FREQUENCY (2*M_PI/24.0)
 #define SCROLL_SPEED 2
+#define INCREASE 1
+#define DECREASE -1
 
 #define max(a, b) ((a) > (b) ? (a) : (b))  
 #define min(a, b) ((a) < (b) ? (a) : (b)) 
@@ -60,6 +63,14 @@ typedef struct
     BUTTON buttons[4];
 } Energyplant;
 
+typedef struct 
+{
+    char name[256];   // Nom de l'événement
+    int type;   // Type ("increase" ou "decrease")
+    int value;    // Valeur associée
+    int startHour; // Heure de début pour cet événement
+    int endHour; 
+} Event;
 
 // Prototypes des fonctions
 
@@ -98,11 +109,14 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 void update_production(Energyplant *plant, enum Buttontype buttontype); 
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font1);
 
+
+
 extern int realTime;
 extern TTF_Font* font1;
 extern Image images[6];
 extern const char* imageList[];
 extern Energyplant plants[6];
+extern Event events[5];
 extern int selectedImage;
 extern int running;
 extern int hour;

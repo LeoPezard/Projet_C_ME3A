@@ -139,6 +139,7 @@ void create_wind() { // Elle marche
 
 }
 
+
 void draw_button(SDL_Renderer* renderer, BUTTON button)
 {
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -185,26 +186,36 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	}
 	render_text(renderer, font1, label, black, textRect);
 }
-void draw_sun(SDL_Renderer*renderer,SDL_Rect sinusRect,int amplitude, int currentHour) {
+void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour) {
+	// Définir les couleurs pour les fonds
+	if (currentHour > 7 && currentHour < 19) {
+		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Jaune clair
+		SDL_Rect topRect = { sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h / 2 };
+		SDL_RenderFillRect(renderer, &topRect); // Colorier la moitié supérieure
+	}
+	else {
+		SDL_SetRenderDrawColor(renderer, 25, 25, 112, 255); // Bleu nuit
+		SDL_Rect bottomRect = { sinusRect.x, sinusRect.y + sinusRect.h / 2, sinusRect.w, sinusRect.h / 2 };
+		SDL_RenderFillRect(renderer, &bottomRect); // Colorier la moitié inférieure
+	}
+
+	// Dessiner les bordures du rectangle
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Noir
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2);// Ligne des abscisses
-	
-	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y ,
-		sinusRect.x + sinusRect.w, sinusRect.y);// Bordure supérieure
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2); // Ligne des abscisses
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
-		sinusRect.x , sinusRect.y+ sinusRect.h);//Bordure gauche
-	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y+sinusRect.h,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h);//Bordure inférieure
-	SDL_RenderDrawLine(renderer, sinusRect.x+ sinusRect.w, sinusRect.y,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h);// Bordure droite
-	SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Couleur soleil
+		sinusRect.x + sinusRect.w, sinusRect.y); // Bordure supérieure
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
+		sinusRect.x, sinusRect.y + sinusRect.h); // Bordure gauche
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h,
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure inférieure
+	SDL_RenderDrawLine(renderer, sinusRect.x + sinusRect.w, sinusRect.y,
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure droite
 
+	// Dessiner la sinusoïde
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Couleur orangée (sinusoïde)
 	double displayPeriod = 12.0; // afficher que les 12 prochaines heures
 	double hoursPerPixel = displayPeriod / sinusRect.w; // Conversion des pixels en heures (par rapport à la période affichée)
-	
-	// Dessiner la sinusoïde
-	SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Couleur orangée (sinusoïde)
 	for (int x = 0; x < sinusRect.w; x++) {
 		double time = currentHour + x * hoursPerPixel; // Heure correspondant au pixel x
 		double value = sin(SIN_FREQUENCY * (time - 7)); // Décalage pour commencer à 7h
@@ -213,6 +224,7 @@ void draw_sun(SDL_Renderer*renderer,SDL_Rect sinusRect,int amplitude, int curren
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
 	}
 }
+
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 	for (int i = 0; i < 6; i++) {
 		char path[128];

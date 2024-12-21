@@ -21,11 +21,14 @@ int realTime = 3000; // Temps pour 1 heure
 //--------------------------------------------------------------
 int main(int argc, char* argv[])
 {
+    srand(time(NULL));
     // Declarations fenetres rendu
     SDL_Window* fenetrePrincipale = NULL;
     SDL_Renderer* rendu = NULL;
     SDL_Texture* texture_fond  = NULL ;
     SDL_Texture* tv = NULL;
+    SDL_Texture* sun = NULL;
+    SDL_Texture* moon= NULL;
 
 
     SDL_Rect destination = { 0,0,L_FENETRE,H_FENETRE };
@@ -33,6 +36,8 @@ int main(int argc, char* argv[])
     SDL_Rect sinusRect = { 900, 225, 250, 150 };
     SDL_Rect HourRect = { 990,135 };
     SDL_Rect rect1 = { 930, 30 };
+    SDL_Rect sunRect = { 990,230,70,60 };
+    SDL_Rect moonRect = { 1000,315,50,50 };
     
     //SDL_Event evenement;
 
@@ -90,7 +95,13 @@ int main(int argc, char* argv[])
         },
     }
     };
-
+    Event events[5] = {
+        {"Major sporting", INCREASE, 50, 20,22},
+        {"Cold wave", INCREASE, 60, 10,23},
+        {"Holiday season", DECREASE, 70, 1,23},
+        {"Festival", INCREASE, 20, 10,23},
+        {"Mass outdoor event", DECREASE, 35, 12,19}
+    };
     // Initialisation de la SDL avec sortie du programme si erreur
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "Erreur sur initialisation de la SDL (%s)\n", SDL_GetError());
@@ -135,6 +146,8 @@ int main(int argc, char* argv[])
     //-----------------------------
     texture_fond = IMG_LoadTexture(rendu, "./assets/provence.jpg");
     tv = IMG_LoadTexture(rendu, "./assets/tv.png");
+    sun = IMG_LoadTexture(rendu, "./assets/sun2.png");
+    moon = IMG_LoadTexture(rendu, "./assets/moon.png");
     draw_energy_plant_widget(rendu, plants);
     // 3) creation des variables
 
@@ -161,8 +174,6 @@ int main(int argc, char* argv[])
     int lastWindUpdateTime = 0;  // Temps de la dernière mise à jour du vent
     int windUpdateInterval = 1000;
 
-
-    
     int amplitude = sinusRect.h / 2 - 10;
     
     int minutes = 0;
@@ -226,6 +237,7 @@ int main(int argc, char* argv[])
             
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
             SDL_RenderCopy(rendu, tv, NULL, &tvRect);
+            
             draw_energy_plant_production(rendu, plants);
             legend_plant_production(rendu, plants, font1);
             for (int i = 0; i < 6; i++) {
@@ -280,6 +292,8 @@ int main(int argc, char* argv[])
 
             // Dessiner la courbe sinusoïdale dans le rectangle
             draw_sun(rendu, sinusRect, amplitude, hour);
+            SDL_RenderCopy(rendu, sun, NULL, &sunRect);
+            SDL_RenderCopy(rendu, moon, NULL, &moonRect);
 
             // Mettre à jour le décalage
             offsetSin += 1;
