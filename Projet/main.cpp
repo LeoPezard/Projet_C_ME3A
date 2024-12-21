@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     //SDL_Event evenement;
 
     
-    int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1;
+    int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1, eventTriggeredToday = 0;
     // intervalle = durée de temps en ms d'actualisation
 
     Energyplant plants[6] = {
@@ -179,6 +179,7 @@ int main(int argc, char* argv[])
     int minutes = 0;
     while (running) {
         int startTime = SDL_GetTicks();
+        create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message, sizeof(message));
         while (hour < 24 && running!=0 ) {
             //if (SDL_GetTicks() - startTime >= realTime) { // 1 heure <-> 500 ms ici ( a modifier)
             //    hour += 1;
@@ -287,6 +288,14 @@ int main(int argc, char* argv[])
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
             update_production_wind(&plants[2], wind);
+            //if (hour == 0) {
+            //    eventTriggeredToday = 0; // Réinitialise la condition en début de journée
+            //}
+
+            //if (!eventTriggeredToday) {
+            //    
+            //    eventTriggeredToday = 1;  // Empêche un autre événement de se déclencher dans la journée
+            //}
             SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); // Blanc
             SDL_RenderFillRect(rendu, &sinusRect);
 
@@ -305,6 +314,7 @@ int main(int argc, char* argv[])
             SDL_Delay(16);
         }
         hour = 0;
+
     }
 
 

@@ -1,12 +1,6 @@
-﻿  fonctions.cpp
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(106,34): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(119,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(254,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-  fonctions2.cpp
-  main.cpp
+﻿  main.cpp
 C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(24,15): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(187,44): warning C4018: '>=' : incompatibilité signed/unsigned
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(285,53): warning C4018: '>=' : incompatibilité signed/unsigned
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(289,48): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
-  Génération de code en cours...
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(188,44): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(286,53): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(290,48): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
   Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\x64\Debug\Projet.exe

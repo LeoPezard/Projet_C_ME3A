@@ -138,7 +138,23 @@ void create_wind() { // Elle marche
 	}
 
 }
+void create_event(Event events[], int event_count, float* totalDemand, int hour, 
+	char message[], size_t messageSize) {
+	// Choisir un événement aléatoire
+	int eventIndex = rand() % event_count;
+	Event chosenEvent = events[eventIndex];
 
+	// Vérifier si l'événement est applicable à l'heure actuelle
+	if (hour >= chosenEvent.startHour && hour <= chosenEvent.endHour) {
+		// Appliquer l'augmentation/diminution à totalDemand
+		if (chosenEvent.type == INCREASE) {
+			*totalDemand += chosenEvent.value;
+		}
+		else if (chosenEvent.type == DECREASE) {
+			*totalDemand -= chosenEvent.value;
+		}
+	}snprintf(message, messageSize, "Event %s", chosenEvent.name);
+}
 
 void draw_button(SDL_Renderer* renderer, BUTTON button)
 {

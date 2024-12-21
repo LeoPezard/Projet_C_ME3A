@@ -76,12 +76,17 @@ typedef struct
 
 // Valeurs générales calculées
 
+
+
 float current_production(Energyplant plants[6]);
 double current_satisfaction(Energyplant plants[6]);
 double current_CO2(Energyplant plants[6]);
 float current_demand(int hour);
 
 void create_wind();
+void create_event(Event events[], int event_count, float* totalDemand, int hour,
+    char message[], size_t messageSize);
+
 void update_production_sun(Energyplant* plant, int currentHour);
 void update_production_wind(Energyplant* plant, int currentWind);
 double current_cost(Energyplant plants[6]);
