@@ -70,6 +70,7 @@ typedef struct
     int value;    // Valeur associée
     int startHour; // Heure de début pour cet événement
     int endHour; 
+    SDL_Texture* image;
 } Event;
 
 // Prototypes des fonctions
@@ -81,12 +82,17 @@ typedef struct
 float current_production(Energyplant plants[6]);
 double current_satisfaction(Energyplant plants[6]);
 double current_CO2(Energyplant plants[6]);
+float demand_at(int hour);
 float current_demand(int hour);
+float future_demand(int hour, int delta);
 
+void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand);
+void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up);
 void create_wind();
 void create_event(Event events[], int event_count, float* totalDemand, int hour,
     char message[], size_t messageSize);
 
+void draw_events(SDL_Renderer* renderer, Event chosenEvent);
 void update_production_sun(Energyplant* plant, int currentHour);
 void update_production_wind(Energyplant* plant, int currentWind);
 double current_cost(Energyplant plants[6]);
@@ -97,6 +103,7 @@ void display_datas(SDL_Renderer* renderer);
 void destroyImages();
 void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height);
 void draw_button(SDL_Renderer* renderer, BUTTON button);
+void draw_demand(SDL_Renderer* renderer);
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color,
     SDL_Rect position);
 bool isRectClicked(int x, int y, SDL_Rect button);
@@ -122,6 +129,7 @@ extern Image images[6];
 extern const char* imageList[];
 extern Energyplant plants[6];
 extern Event events[5];
+extern Event chosenEvent;
 extern int selectedImage;
 extern int running;
 extern int hour;

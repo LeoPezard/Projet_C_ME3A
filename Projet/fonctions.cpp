@@ -8,7 +8,6 @@ const char* imageList[] = {
 	"hydro.png",
 	"batterie.png",
 	"charbon.png",
-	"tv.png"
 };
 
 
@@ -90,22 +89,40 @@ double current_cost(Energyplant plants[6]) {
 	}
 	return cost;
 }
-float current_demand(int hour) { // en MW (données de la france)
-	if (hour >1 && hour <= 10) { // augmentation progressive jusqu'à midi
-		totalDemand += (hour - 1) * 4000; // chaque heure augmente de 4000 MW
+
+float demand_at(int hour) { // en MW (données de la France)
+	float demande = 0.0; // Pas totalDemand car modifie pour les utilisations des autres fct de demande 
+	if (hour > 1 && hour <= 10) { // augmentation progressive jusqu'à midi
+		demande = (hour - 1) * 4000; // chaque heure augmente de 4000 MW
 	}
 	else if (hour > 10 && hour <= 16) { // stabilisation dans la journée
-		totalDemand = 71000.0; // plateau autour de 71000 MW
+		demande = 71000.0; // plateau autour de 71000 MW
 	}
 	else if (hour > 16 && hour <= 20) { // pic en soirée
-		totalDemand = 75000.0; // pic maximal vers 18-20h
+		demande = 75000.0; // pic maximal vers 18-20h
 	}
 	else if (hour > 20 || hour <= 1) { // baisse progressive la nuit
-		totalDemand = 35000.0; // stabilisation la nuit
+		demande = 35000.0; // stabilisation la nuit
 	}
-	totalDemand = (totalDemand/11.4)/24.0; // convertie en donné PACA puis en MWh
+
+	// Conversion pour les données PACA, puis en MWh
+	demande = (demande / 11.4) / 24.0;
+	return demande;
+}
+float current_demand(int hour) {
+	totalDemand = demand_at(hour); // demande actuelle
 	return totalDemand;
 }
+float future_demand(int hour, int delta) {
+	int futureHour = (hour + delta) % 24; // assure que l'heure reste entre 0 et 23
+	return demand_at(futureHour); // demande future
+}
+
+void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
+	draw_arrow(renderer, 450, 30, currentDemand < futureDemand);
+}
+
+
 double current_CO2(Energyplant plants[6]) {
 	generalCO2 = 0;
 	for (int i = 0; i < 6; i++) {
@@ -142,7 +159,7 @@ void create_event(Event events[], int event_count, float* totalDemand, int hour,
 	char message[], size_t messageSize) {
 	// Choisir un événement aléatoire
 	int eventIndex = rand() % event_count;
-	Event chosenEvent = events[eventIndex];
+	chosenEvent = events[eventIndex];
 
 	// Vérifier si l'événement est applicable à l'heure actuelle
 	if (hour >= chosenEvent.startHour && hour <= chosenEvent.endHour) {
@@ -153,9 +170,19 @@ void create_event(Event events[], int event_count, float* totalDemand, int hour,
 		else if (chosenEvent.type == DECREASE) {
 			*totalDemand -= chosenEvent.value;
 		}
-	}snprintf(message, messageSize, "Event %s", chosenEvent.name);
+	}snprintf(message, messageSize, "%s", chosenEvent.name);
+	
 }
 
+
+void draw_events(SDL_Renderer* renderer, Event chosenEvent) {
+	SDL_Rect destRect = { 915, 22, 230, 150 }; // Position et taille de l'image
+	if (chosenEvent.image == NULL) {
+		printf("Erreur de chargement de l'image \n");
+		exit(EXIT_FAILURE);
+	}
+	SDL_RenderCopy(renderer, chosenEvent.image, NULL, &destRect);
+}
 void draw_button(SDL_Renderer* renderer, BUTTON button)
 {
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -240,7 +267,28 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
 	}
 }
-
+void draw_demand(SDL_Renderer* renderer) {
+	float ratio = totalDemand / 400;
+	if (ratio >= 0.8) {
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
+	}
+	else if (ratio >= 0.7) {
+		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Orange
+	}
+	else if (ratio >= 0.6) {
+		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
+	}
+	else if (ratio >= 0.3) {
+		SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255); // Vert jaune
+	}
+	else {
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
+	}
+	drawRectangle(renderer, 10, 10, ratio*400, 50);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_Rect border = { 10, 10, 400, 50 };
+	SDL_RenderDrawRect(renderer, &border);
+}
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 	for (int i = 0; i < 6; i++) {
 		char path[128];
@@ -307,7 +355,25 @@ void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) 
 	SDL_Rect rect = { x, y, width, height };
 	SDL_RenderFillRect(renderer, &rect);
 }
+void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
+	// Dimensions de la flèche
+	int size = 20; // Taille de la flèche
 
+	if (up) {
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		// Flèche pointant vers le haut
+		SDL_RenderDrawLine(renderer, x, y + size, x, y); // Tige
+		SDL_RenderDrawLine(renderer, x - size / 2, y, x, y - size); // Aile gauche
+		SDL_RenderDrawLine(renderer, x + size / 2, y, x, y - size); // Aile droite
+	}
+	else {
+		// Flèche pointant vers le bas
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+		SDL_RenderDrawLine(renderer, x, y - size, x, y); // Tige
+		SDL_RenderDrawLine(renderer, x - size / 2, y, x, y + size); // Aile gauche
+		SDL_RenderDrawLine(renderer, x + size / 2, y, x, y + size); // Aile droite
+	}
+}
 
 
 void display_datas(SDL_Renderer*renderer){

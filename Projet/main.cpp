@@ -9,6 +9,7 @@ int running = 1;
 int hour = 0;
 SDL_Color white = { 255, 255, 255, 255 };
 SDL_Color black = { 0, 0, 0, 255 };
+Event chosenEvent;
 float totalProduction = 0;
 double generalSatisfaction = 0;
 double generalCO2 = 0;
@@ -35,7 +36,8 @@ int main(int argc, char* argv[])
     SDL_Rect tvRect = { 850,-25,350,250 };
     SDL_Rect sinusRect = { 900, 225, 250, 150 };
     SDL_Rect HourRect = { 990,135 };
-    SDL_Rect rect1 = { 930, 30 };
+    SDL_Rect info1 = { 930, 70 };
+    SDL_Rect info2 = { 930, 30 };
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
     
@@ -95,13 +97,7 @@ int main(int argc, char* argv[])
         },
     }
     };
-    Event events[5] = {
-        {"Major sporting", INCREASE, 50, 20,22},
-        {"Cold wave", INCREASE, 60, 10,23},
-        {"Holiday season", DECREASE, 70, 1,23},
-        {"Festival", INCREASE, 20, 10,23},
-        {"Mass outdoor event", DECREASE, 35, 12,19}
-    };
+    
     // Initialisation de la SDL avec sortie du programme si erreur
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "Erreur sur initialisation de la SDL (%s)\n", SDL_GetError());
@@ -142,6 +138,13 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
+    Event events[5] = {
+        {"Major sporting", INCREASE, 50, 20,22, IMG_LoadTexture(rendu, "./assets/match.png")},
+        {"Cold wave", INCREASE, 60, 10,23, IMG_LoadTexture(rendu, "./assets/cold.png")},
+        {"Holiday season", DECREASE, 70, 1,23, IMG_LoadTexture(rendu, "./assets/holidays.png")},
+        {"Festival", INCREASE, 20, 10,23, IMG_LoadTexture(rendu, "./assets/festival.jpg")},
+        {"Mass outdoor event", DECREASE, 35, 12,19,IMG_LoadTexture(rendu, "./assets/event.png")}
+    };
     // 2) Test de la librairie Image
     //-----------------------------
     texture_fond = IMG_LoadTexture(rendu, "./assets/provence.jpg");
@@ -165,8 +168,8 @@ int main(int argc, char* argv[])
 
     };
     
-    char message[256];
-    snprintf(message, sizeof(message), "nothing to say");
+    char message[256], message2[35];
+    snprintf(message2, sizeof(message2), "Event of the day :");
     
     bool clicked[6] = { false, false, false, false, false, false };
     int offsetSin = 0;
@@ -179,6 +182,7 @@ int main(int argc, char* argv[])
     int minutes = 0;
     while (running) {
         int startTime = SDL_GetTicks();
+        // Création d'un évènement par jour
         create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message, sizeof(message));
         while (hour < 24 && running!=0 ) {
             //if (SDL_GetTicks() - startTime >= realTime) { // 1 heure <-> 500 ms ici ( a modifier)
@@ -234,8 +238,6 @@ int main(int argc, char* argv[])
             // début de la zone d'affichage
             SDL_RenderClear(rendu);
             
-
-            
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
             SDL_RenderCopy(rendu, tv, NULL, &tvRect);
             
@@ -268,9 +270,9 @@ int main(int argc, char* argv[])
             draw_button(rendu, buttonQuit);
 
             // affichage du message
-            
-            render_text(rendu, font1, message, white, rect1);
-
+            draw_events(rendu, chosenEvent);
+            render_text(rendu, font1, message, black, info1);
+            render_text(rendu, font1, message2, black, info2);
             char hour_text[256];
             
             snprintf(hour_text, sizeof(hour_text), "%d : %d", hour,minutes);
@@ -280,6 +282,7 @@ int main(int argc, char* argv[])
             update_co2(plants);
             current_CO2(plants);
             current_demand(hour);
+            draw_demand_indicator(rendu, totalDemand, future_demand(hour,2));
             update_cost(plants);
             current_cost(plants);
             update_production_sun(&plants[1], hour);
@@ -303,13 +306,13 @@ int main(int argc, char* argv[])
             draw_sun(rendu, sinusRect, amplitude, hour);
             SDL_RenderCopy(rendu, sun, NULL, &sunRect);
             SDL_RenderCopy(rendu, moon, NULL, &moonRect);
+            draw_demand(rendu);
 
             // Mettre à jour le décalage
             offsetSin += 1;
             display_datas(rendu);
 
             
-
             SDL_RenderPresent(rendu); // fin de la zone d'affichage
             SDL_Delay(16);
         }
