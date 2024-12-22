@@ -16,14 +16,13 @@ void update_production(Energyplant* plant, enum Buttontype buttontype) {
 		if (plant->type == FOSSIL || plant->type == HYDRO ||
 			plant->type == BATTERY) {
 			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-			plant->co2 = (5.0 / 100) * plant->currentProduction; //  TODO : trouver relation
 		}
 	}
 	else if (buttontype == POWER_MINUS) {
 		if (plant->type == FOSSIL || plant->type == HYDRO ||
 			plant->type == BATTERY) {
 			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
-			
+
 		}
 	}
 	if (plant->currentProduction > plant->maximumProduction) {
@@ -118,9 +117,6 @@ float future_demand(int hour, int delta) {
 	return demand_at(futureHour); // demande future
 }
 
-void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
-	draw_arrow(renderer, 450, 30, currentDemand < futureDemand);
-}
 
 
 double current_CO2(Energyplant plants[6]) {
@@ -131,20 +127,67 @@ double current_CO2(Energyplant plants[6]) {
 	return generalCO2;
 }
 float current_production(Energyplant plants[6]) {
-	totalProduction = 0;
+	totalProduction = 0.0;
 	for (int i = 0; i < 6; i++) {
 		totalProduction += plants[i].currentProduction;
 	}
 	return totalProduction;
 }
 double current_satisfaction(Energyplant plants[6]) {
-	generalSatisfaction = 0;
+	generalSatisfaction = 0.0;
+	double renewableProduction = 0.0;
+	double nonRenewableProduction = 0.0;
 	for (int i = 0; i < 6; i++) {
-		generalSatisfaction += plants[i].statisfaction;
+		switch (plants[i].type) {
+		case FOSSIL:
+			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.6; // Réduction pour les fossiles
+			nonRenewableProduction += plants[i].currentProduction;
+			break;
+		case SOLAR:
+		case WIND:
+		case HYDRO:
+			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 1.2; // Bonus pour les renouvelables
+			renewableProduction += plants[i].currentProduction;
+			break;
+		case NUCLEAR:
+			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.9; // Légère réduction pour le nucléaire
+			nonRenewableProduction += plants[i].currentProduction;
+			break;
+		}
+		// Ajouter la satisfaction actuelle à la satisfaction globale
+		generalSatisfaction += plants[i].currentSatisfaction;
 	}
-	return generalSatisfaction / 6;
-}
+	if (totalDemand > totalProduction) {
+		// Si la demande est supérieure à la production, pénalité proportionnelle
+		generalSatisfaction -= (totalDemand - totalProduction) / totalDemand * 20.0;
+	}
+	else {
+		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
+		double excessProductionRatio = (totalProduction - totalDemand) / totalDemand;
+		if (excessProductionRatio > 0.5) {
+			generalSatisfaction -= excessProductionRatio * 10.0; // Pénalité si excès trop important
+		}
+		else {
+			generalSatisfaction += excessProductionRatio * 10.0; // Bonus pour une production légèrement excédentaire
+		}
+	}
 
+	// Ajustement basé sur le ratio renouvelable/non-renouvelable
+	double totalRenewableRatio = renewableProduction / totalProduction;
+	if (totalRenewableRatio > 0.3) {
+		generalSatisfaction += totalRenewableRatio * 10.0; // Bonus pour un ratio élevé de renouvelables
+	}
+	else {
+		generalSatisfaction -= (1.0 - totalRenewableRatio) * 10.0; // Pénalité pour un ratio faible de renouvelables
+	}
+
+	// S'assurer que la satisfaction reste dans les limites [0, 100]
+	if (generalSatisfaction > 100.0) generalSatisfaction = 100.0;
+	//if (generalSatisfaction < 0.0) generalSatisfaction = 0.0;
+
+	return generalSatisfaction;
+
+}
 void create_wind() { // Elle marche
 	wind = (double)rand() / RAND_MAX;
 	if (wind <= 0.6) {
@@ -155,7 +198,7 @@ void create_wind() { // Elle marche
 	}
 
 }
-void create_event(Event events[], int event_count, float* totalDemand, int hour, 
+void create_event(Event events[], int event_count, float* totalDemand, int hour,
 	char message[], size_t messageSize) {
 	// Choisir un événement aléatoire
 	int eventIndex = rand() % event_count;
@@ -171,7 +214,7 @@ void create_event(Event events[], int event_count, float* totalDemand, int hour,
 			*totalDemand -= chosenEvent.value;
 		}
 	}snprintf(message, messageSize, "%s", chosenEvent.name);
-	
+
 }
 
 
@@ -200,7 +243,7 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	}
 	else if (button.type == FASTER)
 	{
-		SDL_SetRenderDrawColor(renderer, 255,165, 0, 255);
+		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
 	}
 	else if (button.type == SLOWER)
 	{
@@ -284,7 +327,7 @@ void draw_demand(SDL_Renderer* renderer) {
 	else {
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
 	}
-	drawRectangle(renderer, 10, 10, ratio*400, 50);
+	drawRectangle(renderer, 10, 10, ratio * 400, 50);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_Rect border = { 10, 10, 400, 50 };
 	SDL_RenderDrawRect(renderer, &border);
@@ -316,7 +359,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]) {
 	for (int i = 0; i < 6; i++) {
 		float ratio = plants[i].currentProduction / plants[i].maximumProduction;
-	
+
 		// Définir la couleur en fonction des paliers du ratio
 		if (ratio >= 0.8) {
 			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
@@ -343,7 +386,7 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_Rect border = {
 			plants[i].x + 100,        // Position x
-			plants[i].y + 100,   
+			plants[i].y + 100,
 			75,// Position y (en haut de la bordure)
 			//plants[i].width/2,          // Largeur de la bordure
 			plants[i].height          // Hauteur totale (pleine bordure)
@@ -356,39 +399,34 @@ void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) 
 	SDL_RenderFillRect(renderer, &rect);
 }
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
-	// Dimensions de la flèche
-	int size = 20; // Taille de la flèche
-
+	SDL_Rect arrowRect= { 440,10, 50,50 };
+	SDL_Texture* arrowUp = IMG_LoadTexture(renderer, "./assets/arrowUp.png");
+	SDL_Texture* arrowDown = IMG_LoadTexture(renderer, "./assets/arrowDown.png");
 	if (up) {
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		// Flèche pointant vers le haut
-		SDL_RenderDrawLine(renderer, x, y + size, x, y); // Tige
-		SDL_RenderDrawLine(renderer, x - size / 2, y, x, y - size); // Aile gauche
-		SDL_RenderDrawLine(renderer, x + size / 2, y, x, y - size); // Aile droite
+		SDL_RenderCopy(renderer, arrowUp, NULL, &arrowRect);
 	}
 	else {
-		// Flèche pointant vers le bas
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-		SDL_RenderDrawLine(renderer, x, y - size, x, y); // Tige
-		SDL_RenderDrawLine(renderer, x - size / 2, y, x, y + size); // Aile gauche
-		SDL_RenderDrawLine(renderer, x + size / 2, y, x, y + size); // Aile droite
+		SDL_RenderCopy(renderer, arrowDown, NULL, &arrowRect);
 	}
+}
+void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
+	draw_arrow(renderer, 450, 30, currentDemand < futureDemand);
 }
 
 
-void display_datas(SDL_Renderer*renderer){
+void display_datas(SDL_Renderer* renderer) {
 	SDL_Rect rect_datas1 = { 50,175 , L_FENETRE, 50 };
 	SDL_Rect rect_datas2 = { 50,210 , L_FENETRE, 50 };
 	SDL_Rect rect_datas3 = { 50,245 , L_FENETRE, 50 };
 
 	char description[250], description2[150], description3[150];
-	snprintf(description, sizeof(description), 
+	snprintf(description, sizeof(description),
 		"Current CO2 emissions : %.2f Kg  "
-		"Current production : %2.f MWh", 
+		"Current production : %2.f MWh",
 		generalCO2, totalProduction);
 	snprintf(description2, sizeof(description2),
-		"Current demand : %.2f MWh  " 
-		"Current satisfaction : %2.f/10",
+		"Current demand : %.2f MWh  "
+		"Current satisfaction : %2.f/100",
 		totalDemand, generalSatisfaction);
 	snprintf(description3, sizeof(description3),
 		"Actual wind %.2f Km/h  "
@@ -400,9 +438,9 @@ void display_datas(SDL_Renderer*renderer){
 	//render_text(renderer, font1, description, black, rect_datas1);
 
 }
-void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font*font1) {
+void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font* font1) {
 	for (int i = 0; i < 6; i++) {
-		SDL_Rect rect_description = { plants[i].x +10, plants[i].y-15 , plants[i].width, 50};
+		SDL_Rect rect_description = { plants[i].x + 10, plants[i].y - 15 , plants[i].width, 50 };
 		char description[128];
 		snprintf(description, sizeof(description), "Power : %.2f MWh", plants[i].currentProduction);
 		render_text(renderer, font1, description, white, rect_description);
@@ -436,5 +474,3 @@ void destroyImages() {
 		SDL_DestroyTexture(images[i].texture);
 	}
 }
-
-

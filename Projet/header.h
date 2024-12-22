@@ -25,7 +25,7 @@
 
 
 // Enums
-enum Buttontype { POWER_PLUS, POWER_MINUS, STORAGE_PLUS, STORAGE_MINUS, QUIT, FASTER, SLOWER};
+enum Buttontype { POWER_PLUS, POWER_MINUS, STORAGE_PLUS, STORAGE_MINUS, QUIT, FASTER, SLOWER };
 enum EnergyType { WIND, FOSSIL, SOLAR, HYDRO, BATTERY, NUCLEAR };
 
 // Structures
@@ -46,10 +46,11 @@ typedef struct
     enum EnergyType  type;
     double maximumProduction;
     double currentProduction;
+    double currentSatisfaction;
     double storageRatio;
     double co2;
     double cost;
-    double statisfaction;
+
     int adjustable;
     int stockable;
     // Direct position and dimension fields
@@ -63,13 +64,13 @@ typedef struct
     BUTTON buttons[4];
 } Energyplant;
 
-typedef struct 
+typedef struct
 {
     char name[256];   // Nom de l'événement
     int type;   // Type ("increase" ou "decrease")
     int value;    // Valeur associée
     int startHour; // Heure de début pour cet événement
-    int endHour; 
+    int endHour;
     SDL_Texture* image;
 } Event;
 
@@ -118,7 +119,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
 
 // !!!!!! Une seule plant en paramètre
-void update_production(Energyplant *plant, enum Buttontype buttontype); 
+void update_production(Energyplant* plant, enum Buttontype buttontype);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font1);
 
 
@@ -140,8 +141,8 @@ extern double generalSatisfaction;
 extern double generalCO2;
 extern float totalDemand;
 extern double cost;
-extern SDL_Texture *sunTexture;
-extern SDL_Texture *moonTexture;
+extern SDL_Texture* sunTexture;
+extern SDL_Texture* moonTexture;
 extern double wind;
 
 

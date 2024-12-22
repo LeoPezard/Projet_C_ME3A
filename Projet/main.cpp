@@ -26,10 +26,10 @@ int main(int argc, char* argv[])
     // Declarations fenetres rendu
     SDL_Window* fenetrePrincipale = NULL;
     SDL_Renderer* rendu = NULL;
-    SDL_Texture* texture_fond  = NULL ;
+    SDL_Texture* texture_fond = NULL;
     SDL_Texture* tv = NULL;
     SDL_Texture* sun = NULL;
-    SDL_Texture* moon= NULL;
+    SDL_Texture* moon = NULL;
 
 
     SDL_Rect destination = { 0,0,L_FENETRE,H_FENETRE };
@@ -40,15 +40,15 @@ int main(int argc, char* argv[])
     SDL_Rect info2 = { 930, 30 };
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
-    
+
     //SDL_Event evenement;
 
-    
+
     int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1, eventTriggeredToday = 0;
     // intervalle = durée de temps en ms d'actualisation
 
     Energyplant plants[6] = {
-    {"Gas Power Plant", FOSSIL, 300.0, 28.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
+    {"Gas Power Plant", FOSSIL, 300.0, 28.0, 4.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Solar Power Plant", SOLAR, 50.0, 18.24, 0.0, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
+    {"Solar Power Plant", SOLAR, 50.0, 18.24, 7.5, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Wind Power Plant", WIND, 60.0, 18.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
+    {"Wind Power Plant", WIND, 60.0, 18.0, 7.5, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6, 0.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
+    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6, 8.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Hydraulic Power Plant", HYDRO, 100.0, 48.0, 0.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
+    {"Hydraulic Power Plant", HYDRO, 100.0, 48.0, 8.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Battery Power Plant", BATTERY, 50.0, 25.0, 0.0, 80.0, 60.0, 0.7, 1, 1, 1000, 425, 200, 200,
+    {"Battery Power Plant", BATTERY, 50.0, 25.0, 6.0, 80.0, 60.0, 0.7, 1, 1, 1000, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
         },
     }
     };
-    
+
     // Initialisation de la SDL avec sortie du programme si erreur
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "Erreur sur initialisation de la SDL (%s)\n", SDL_GetError());
@@ -157,8 +157,8 @@ int main(int argc, char* argv[])
     // Initialisation des champs des boutons
     BUTTON button1 = { {955, 190, 75, 25}, FASTER };
     BUTTON button2 = { {1030, 190, 75, 25}, SLOWER };
-    BUTTON buttonQuit = { {L_FENETRE/2, H_FENETRE -30, 70, 30}, QUIT };
-    BUTTON appButtons[4] = { button1, button2, buttonQuit, 0};
+    BUTTON buttonQuit = { {L_FENETRE / 2, H_FENETRE - 30, 70, 30}, QUIT };
+    BUTTON appButtons[4] = { button1, button2, buttonQuit, 0 };
     BUTTON buttons[4][6] = {
         // Initialisation des boutons POWER_PLUS sous chaque image
         {{ {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS },{ {0, 0, 80, 30}, POWER_PLUS }},
@@ -167,29 +167,29 @@ int main(int argc, char* argv[])
         {{ {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS },{ {0, 0, 80, 30}, STORAGE_MINUS }}
 
     };
-    
+
     char message[256], message2[35];
     snprintf(message2, sizeof(message2), "Event of the day :");
-    
+
     bool clicked[6] = { false, false, false, false, false, false };
     int offsetSin = 0;
 
     int lastWindUpdateTime = 0;  // Temps de la dernière mise à jour du vent
-    int windUpdateInterval = 1000;
+    int windUpdateInterval = 2000; // Intervalle pour modifier le vent
 
     int amplitude = sinusRect.h / 2 - 10;
-    
+
     int minutes = 0;
     while (running) {
         int startTime = SDL_GetTicks();
         // Création d'un évènement par jour
         create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message, sizeof(message));
-        while (hour < 24 && running!=0 ) {
+        while (hour < 24 && running != 0) {
             //if (SDL_GetTicks() - startTime >= realTime) { // 1 heure <-> 500 ms ici ( a modifier)
             //    hour += 1;
             //    startTime = SDL_GetTicks();
             //}
-            if (SDL_GetTicks() - startTime >= realTime/60) {
+            if (SDL_GetTicks() - startTime >= realTime / 60) {
                 minutes += 1;
                 startTime = SDL_GetTicks();
                 if (minutes > 60) {
@@ -232,15 +232,15 @@ int main(int argc, char* argv[])
                 // Mise en pause pour laisser le CPU travailler sur d'autres tâches
                 SDL_Delay(intervalle - (temps - tempsPrecedent));
             }
-            
-            
+
+
             // Mise à jour de l'affichage avec les fonctions liées au rendu à mettre ici
             // début de la zone d'affichage
             SDL_RenderClear(rendu);
-            
+
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
             SDL_RenderCopy(rendu, tv, NULL, &tvRect);
-            
+
             draw_energy_plant_production(rendu, plants);
             legend_plant_production(rendu, plants, font1);
             for (int i = 0; i < 6; i++) {
@@ -252,19 +252,19 @@ int main(int argc, char* argv[])
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
                 }
-                else if (clicked[i] && (plants[i].type == WIND || plants[i].type == SOLAR || 
+                else if (clicked[i] && (plants[i].type == WIND || plants[i].type == SOLAR ||
                     plants[i].type == NUCLEAR)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
                     for (int j = 2; j < 4; j++) {
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
                 }
-                else if (clicked[i] && (plants[i].type == BATTERY )) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                else if (clicked[i] && (plants[i].type == BATTERY)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
                     for (int j = 0; j < 2; j++) {
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
                 }
             }
-            
+
             draw_button(rendu, button1);
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
@@ -274,15 +274,15 @@ int main(int argc, char* argv[])
             render_text(rendu, font1, message, black, info1);
             render_text(rendu, font1, message2, black, info2);
             char hour_text[256];
-            
-            snprintf(hour_text, sizeof(hour_text), "%d : %d", hour,minutes);
+
+            snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
             render_text(rendu, font2, hour_text, black, HourRect);
             current_production(plants);
             current_satisfaction(plants);
             update_co2(plants);
             current_CO2(plants);
             current_demand(hour);
-            draw_demand_indicator(rendu, totalDemand, future_demand(hour,2));
+            draw_demand_indicator(rendu, totalDemand, future_demand(hour, 2));
             update_cost(plants);
             current_cost(plants);
             update_production_sun(&plants[1], hour);
@@ -291,14 +291,7 @@ int main(int argc, char* argv[])
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
             update_production_wind(&plants[2], wind);
-            //if (hour == 0) {
-            //    eventTriggeredToday = 0; // Réinitialise la condition en début de journée
-            //}
-
-            //if (!eventTriggeredToday) {
-            //    
-            //    eventTriggeredToday = 1;  // Empêche un autre événement de se déclencher dans la journée
-            //}
+            
             SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); // Blanc
             SDL_RenderFillRect(rendu, &sinusRect);
 
@@ -312,7 +305,7 @@ int main(int argc, char* argv[])
             offsetSin += 1;
             display_datas(rendu);
 
-            
+
             SDL_RenderPresent(rendu); // fin de la zone d'affichage
             SDL_Delay(16);
         }

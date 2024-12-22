@@ -1,7 +1,7 @@
 ﻿  fonctions.cpp
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(96,24): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(109,29): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(136,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(287,39): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(318,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(95,24): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(108,29): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(132,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(330,40): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(361,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
   Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\x64\Debug\Projet.exe
