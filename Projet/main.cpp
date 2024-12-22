@@ -142,8 +142,8 @@ int main(int argc, char* argv[])
         {"Major sporting", INCREASE, 50, 20,22, IMG_LoadTexture(rendu, "./assets/match.png")},
         {"Cold wave", INCREASE, 60, 10,23, IMG_LoadTexture(rendu, "./assets/cold.png")},
         {"Holiday season", DECREASE, 70, 1,23, IMG_LoadTexture(rendu, "./assets/holidays.png")},
-        {"Festival", INCREASE, 20, 10,23, IMG_LoadTexture(rendu, "./assets/festival.jpg")},
-        {"Mass outdoor event", DECREASE, 35, 12,19,IMG_LoadTexture(rendu, "./assets/event.png")}
+        {"Festival", INCREASE, 20, 10,23, IMG_LoadTexture(rendu, "./assets/musique.png")},
+        {"Mass outdoor event", DECREASE, 35, 12,19,IMG_LoadTexture(rendu, "./assets/marathon.png")}
     };
     // 2) Test de la librairie Image
     //-----------------------------
