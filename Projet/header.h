@@ -91,7 +91,7 @@ void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float fu
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up);
 void create_wind();
 void create_event(Event events[], int event_count, float* totalDemand, int hour,
-    char message[], size_t messageSize);
+    char message[], char message3[], size_t messageSize);
 
 void draw_events(SDL_Renderer* renderer, Event chosenEvent);
 void update_production_sun(Energyplant* plant, int currentHour);
@@ -120,12 +120,13 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 
 // !!!!!! Une seule plant en paramètre
 void update_production(Energyplant* plant, enum Buttontype buttontype);
-void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font1);
+void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
 
 
 extern int realTime;
 extern TTF_Font* font1;
+extern TTF_Font* font2;
 extern Image images[6];
 extern const char* imageList[];
 extern Energyplant plants[6];

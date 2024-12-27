@@ -2,6 +2,13 @@
 C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(95,24): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
 C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(108,29): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
 C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(132,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(330,40): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(361,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(331,40): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(362,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  fonctions2.cpp
+  main.cpp
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(26,15): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(191,44): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(288,53): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(292,48): warning C4244: 'argument' : conversion de 'double' en 'int', perte possible de données
+  Génération de code en cours...
   Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\x64\Debug\Projet.exe

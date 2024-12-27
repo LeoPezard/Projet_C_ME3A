@@ -61,6 +61,8 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 	}
 }
 
+
+
 void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6],
 	bool clicked[6], BUTTON buttons[4][6], char message[], size_t messageSize, SDL_Color& white,
 	Energyplant plants[6]) {

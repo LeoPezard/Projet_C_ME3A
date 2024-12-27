@@ -4,6 +4,7 @@
 
 TTF_Font* font1 = NULL;
 TTF_Font* font2 = NULL;
+TTF_Font* font3 = NULL;
 Image images[6];
 int running = 1;
 int hour = 0;
@@ -36,8 +37,9 @@ int main(int argc, char* argv[])
     SDL_Rect tvRect = { 850,-25,350,250 };
     SDL_Rect sinusRect = { 900, 225, 250, 150 };
     SDL_Rect HourRect = { 990,135 };
-    SDL_Rect info1 = { 930, 70 };
-    SDL_Rect info2 = { 930, 30 };
+    SDL_Rect info1 = { 945, 30 };
+    SDL_Rect info2 = { 930, 50 };
+    SDL_Rect info3 = { 930, 70 };
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
 
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Solar Power Plant", SOLAR, 50.0, 18.24, 7.5, 10.0, 60.0, 0.7, 1, 1, 200, 425, 200, 200,
+    {"Solar Power Plant", SOLAR, 50.0, 18.24, 7.5, 10.0, 60.0, 0.7, 0, 1, 200, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -64,7 +66,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Wind Power Plant", WIND, 60.0, 18.0, 7.5, 10.0, 60.0, 0.7, 1, 1, 400, 425, 200, 200,
+    {"Wind Power Plant", WIND, 60.0, 18.0, 7.5, 10.0, 60.0, 0.7, 0, 1, 400, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -72,7 +74,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6, 8.0, 80.0, 60.0, 0.7, 1, 1, 600, 425, 200, 200,
+    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -88,7 +90,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Battery Power Plant", BATTERY, 50.0, 25.0, 6.0, 80.0, 60.0, 0.7, 1, 1, 1000, 425, 200, 200,
+    {"Battery Power Plant", BATTERY, 50.0, 25.0, 6.0, 80.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -110,9 +112,9 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    font1 = TTF_OpenFont("arial.ttf", 20); // 20 est la taille de la police de caractère
-    font2 = TTF_OpenFont("arial.ttf", 30);
-
+    font1 = TTF_OpenFont("arial.ttf", 30); // 20 est la taille de la police de caractère
+    font2 = TTF_OpenFont("arial.ttf", 20);
+    font3 = TTF_OpenFont("arial.ttf", 15);
     // 1) Creation de la fenetre
     //-------------------------
     fenetrePrincipale = SDL_CreateWindow("superProjet", // titre
@@ -165,11 +167,11 @@ int main(int argc, char* argv[])
         {{ {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }},
         {{ {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }},
         {{ {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS },{ {0, 0, 80, 30}, STORAGE_MINUS }}
-
     };
+    
 
-    char message[256], message2[35];
-    snprintf(message2, sizeof(message2), "Event of the day :");
+    char message1[256], message2[35], message3[256];
+    snprintf(message1, sizeof(message1), "Event of the day :");
 
     bool clicked[6] = { false, false, false, false, false, false };
     int offsetSin = 0;
@@ -183,12 +185,9 @@ int main(int argc, char* argv[])
     while (running) {
         int startTime = SDL_GetTicks();
         // Création d'un évènement par jour
-        create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message, sizeof(message));
+        create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message2, message3, sizeof(message3));
         while (hour < 24 && running != 0) {
-            //if (SDL_GetTicks() - startTime >= realTime) { // 1 heure <-> 500 ms ici ( a modifier)
-            //    hour += 1;
-            //    startTime = SDL_GetTicks();
-            //}
+            
             if (SDL_GetTicks() - startTime >= realTime / 60) {
                 minutes += 1;
                 startTime = SDL_GetTicks();
@@ -209,8 +208,8 @@ int main(int argc, char* argv[])
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    clickImageButtons(rendu, event, images, clicked, buttons, message, sizeof(message), white, plants);
-                    clickButtonApp(rendu, event, appButtons, message, sizeof(message), white);
+                    clickImageButtons(rendu, event, images, clicked, buttons, message2, sizeof(message2), white, plants);
+                    clickButtonApp(rendu, event, appButtons, message2, sizeof(message2), white);
 
                     break;
 
@@ -242,18 +241,17 @@ int main(int argc, char* argv[])
             SDL_RenderCopy(rendu, tv, NULL, &tvRect);
 
             draw_energy_plant_production(rendu, plants);
-            legend_plant_production(rendu, plants, font1);
+            legend_plant_production(rendu, plants, font2);
             for (int i = 0; i < 6; i++) {
                 SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
             }
             for (int i = 0; i < 6; i++) {
-                if (clicked[i] && (plants[i].type == FOSSIL || plants[i].type == HYDRO)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                if (clicked[i] && (plants[i].stockable == 1 && plants[i].adjustable == 1)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
                     for (int j = 0; j < 4; j++) {
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
                 }
-                else if (clicked[i] && (plants[i].type == WIND || plants[i].type == SOLAR ||
-                    plants[i].type == NUCLEAR)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                else if (clicked[i] && (plants[i].adjustable == 0)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
                     for (int j = 2; j < 4; j++) {
                         draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
                     }
@@ -264,19 +262,20 @@ int main(int argc, char* argv[])
                     }
                 }
             }
-
+            
             draw_button(rendu, button1);
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
 
             // affichage du message
             draw_events(rendu, chosenEvent);
-            render_text(rendu, font1, message, black, info1);
-            render_text(rendu, font1, message2, black, info2);
+            render_text(rendu, font2, message1, black, info1);
+            render_text(rendu, font2, message2, black, info2);
+            render_text(rendu, font3, message3, black, info3);
             char hour_text[256];
 
             snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
-            render_text(rendu, font2, hour_text, black, HourRect);
+            render_text(rendu, font1, hour_text, black, HourRect);
             current_production(plants);
             current_satisfaction(plants);
             update_co2(plants);

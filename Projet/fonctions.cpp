@@ -199,7 +199,7 @@ void create_wind() { // Elle marche
 
 }
 void create_event(Event events[], int event_count, float* totalDemand, int hour,
-	char message[], size_t messageSize) {
+	char message[],char message3[], size_t messageSize) {
 	// Choisir un événement aléatoire
 	int eventIndex = rand() % event_count;
 	chosenEvent = events[eventIndex];
@@ -214,7 +214,8 @@ void create_event(Event events[], int event_count, float* totalDemand, int hour,
 			*totalDemand -= chosenEvent.value;
 		}
 	}snprintf(message, messageSize, "%s", chosenEvent.name);
-
+	const char* typeText = (chosenEvent.type == INCREASE) ? "Increase" : "Decrease";
+	snprintf(message3, messageSize, "%s from %d to %d", typeText, chosenEvent.startHour, chosenEvent.endHour);
 }
 
 
@@ -270,7 +271,7 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	if (label == "QUIT" || label == "Faster" || label == "Slower") {
 		textRect.x = button.rect.x + 10; textRect.y = button.rect.y;
 	}
-	render_text(renderer, font1, label, black, textRect);
+	render_text(renderer, font2, label, black, textRect);
 }
 void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour) {
 	// Définir les couleurs pour les fonds
@@ -432,18 +433,18 @@ void display_datas(SDL_Renderer* renderer) {
 		"Actual wind %.2f Km/h  "
 		" Current cost : %2.f euros",
 		wind, cost);
-	render_text(renderer, font1, description, black, rect_datas1);
-	render_text(renderer, font1, description2, black, rect_datas2);
-	render_text(renderer, font1, description3, black, rect_datas3);
-	//render_text(renderer, font1, description, black, rect_datas1);
+	render_text(renderer, font2, description, black, rect_datas1);
+	render_text(renderer, font2, description2, black, rect_datas2);
+	render_text(renderer, font2, description3, black, rect_datas3);
+	//render_text(renderer, font2, description, black, rect_datas1);
 
 }
-void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font* font1) {
+void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font* font) {
 	for (int i = 0; i < 6; i++) {
 		SDL_Rect rect_description = { plants[i].x + 10, plants[i].y - 15 , plants[i].width, 50 };
 		char description[128];
 		snprintf(description, sizeof(description), "Power : %.2f MWh", plants[i].currentProduction);
-		render_text(renderer, font1, description, white, rect_description);
+		render_text(renderer, font, description, white, rect_description);
 	}
 
 }
