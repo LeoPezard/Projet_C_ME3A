@@ -43,7 +43,7 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 							realTime = 300;
 						}
 					}
-					snprintf(message, messageSize, "Faster %d", realTime);
+					snprintf(message, messageSize, "Faster");
 				}
 
 				if (appButtons[i].type == SLOWER) {
@@ -53,7 +53,7 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 							realTime = 5000;
 						}
 					}
-					snprintf(message, messageSize, "Slower %d", realTime);
+					snprintf(message, messageSize, "Slower");
 				}
 
 			}
@@ -112,18 +112,18 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 			for (int j = 0; j < 4; j++) {
 				if (isRectClicked(x, y, buttons[j][i].rect)) {
 					if (buttons[j][i].type == POWER_PLUS) {
-						snprintf(message, messageSize, "POWER_PLUS clicked on image %d", i + 1);
+						snprintf(message, messageSize, "Augmentation de la production");
 					}
 					else if (buttons[j][i].type == POWER_MINUS) {
-						snprintf(message, messageSize, "POWER_MINUS clicked on image %d", i + 1);
+						snprintf(message, messageSize, "Diminution de la production");
 					}
 					else if (buttons[j][i].type == STORAGE_PLUS) {
-						snprintf(message, messageSize, "STORAGE_PLUS clicked on image %d", i + 1);
+						snprintf(message, messageSize, "Stockage de l'energie");
 					}
 					else if (buttons[j][i].type == STORAGE_MINUS) {
-						snprintf(message, messageSize, "STORAGE_MINUS clicked on image %d", i + 1);
+						snprintf(message, messageSize, "Reduction du stockage");
 					}
-					update_production(&plants[i], buttons[j][i].type);
+					update_production(&plants[i], buttons[j][i].type, plants);
 				}
 			}
 		}

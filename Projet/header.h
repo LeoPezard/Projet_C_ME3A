@@ -46,6 +46,7 @@ typedef struct
     enum EnergyType  type;
     double maximumProduction;
     double currentProduction;
+    double initialProduction;
     double currentSatisfaction;
     double storageRatio;
     double co2;
@@ -119,7 +120,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
 
 // !!!!!! Une seule plant en paramètre
-void update_production(Energyplant* plant, enum Buttontype buttontype);
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6]);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
 

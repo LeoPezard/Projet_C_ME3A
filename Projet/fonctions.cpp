@@ -11,7 +11,7 @@ const char* imageList[] = {
 };
 
 
-void update_production(Energyplant* plant, enum Buttontype buttontype) {
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6]) {
 	if (buttontype == POWER_PLUS) {
 		if (plant->type == FOSSIL || plant->type == HYDRO ||
 			plant->type == BATTERY) {
@@ -25,6 +25,18 @@ void update_production(Energyplant* plant, enum Buttontype buttontype) {
 
 		}
 	}
+	if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
+		if (buttontype == STORAGE_PLUS && 
+			plants[5].currentProduction + (5.0 / 100) * plant->maximumProduction < plants[5].maximumProduction) {
+			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
+			plants[5].currentProduction += (5.0 / 100) * plant->maximumProduction;
+		}
+		else if (buttontype == STORAGE_MINUS) {
+			if (plant->currentProduction<plant->initialProduction) {
+				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
+			}
+		}
+		}
 	if (plant->currentProduction > plant->maximumProduction) {
 		plant->currentProduction = plant->maximumProduction;
 	}
@@ -32,6 +44,8 @@ void update_production(Energyplant* plant, enum Buttontype buttontype) {
 		plant->currentProduction = 0;
 	}
 }
+
+
 void update_co2(Energyplant plants[6]) {
 	for (int i = 0; i < 5;i++) {
 		if (plants[i].type == FOSSIL) {
@@ -118,7 +132,6 @@ float future_demand(int hour, int delta) {
 }
 
 
-
 double current_CO2(Energyplant plants[6]) {
 	generalCO2 = 0;
 	for (int i = 0; i < 6; i++) {
@@ -135,23 +148,28 @@ float current_production(Energyplant plants[6]) {
 }
 double current_satisfaction(Energyplant plants[6]) {
 	generalSatisfaction = 0.0;
-	double renewableProduction = 0.0;
-	double nonRenewableProduction = 0.0;
+
+
+	// Vérification de la production totale pour éviter une division par zéro
+	if (totalProduction <= 0.0) {
+		return 0.0; // Satisfaction nulle si aucune production
+	}
+
 	for (int i = 0; i < 6; i++) {
 		switch (plants[i].type) {
 		case FOSSIL:
 			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.6; // Réduction pour les fossiles
-			nonRenewableProduction += plants[i].currentProduction;
+
 			break;
 		case SOLAR:
 		case WIND:
 		case HYDRO:
 			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 1.2; // Bonus pour les renouvelables
-			renewableProduction += plants[i].currentProduction;
+
 			break;
 		case NUCLEAR:
 			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.9; // Légère réduction pour le nucléaire
-			nonRenewableProduction += plants[i].currentProduction;
+
 			break;
 		}
 		// Ajouter la satisfaction actuelle à la satisfaction globale
@@ -165,7 +183,7 @@ double current_satisfaction(Energyplant plants[6]) {
 		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
 		double excessProductionRatio = (totalProduction - totalDemand) / totalDemand;
 		if (excessProductionRatio > 0.5) {
-			generalSatisfaction -= excessProductionRatio * 10.0; // Pénalité si excès trop important
+			generalSatisfaction -= log10(1 + excessProductionRatio) * 10.0; // Pénalité douce pour encourager surprod par sécu
 		}
 		else {
 			generalSatisfaction += excessProductionRatio * 10.0; // Bonus pour une production légèrement excédentaire
@@ -173,17 +191,19 @@ double current_satisfaction(Energyplant plants[6]) {
 	}
 
 	// Ajustement basé sur le ratio renouvelable/non-renouvelable
-	double totalRenewableRatio = renewableProduction / totalProduction;
-	if (totalRenewableRatio > 0.3) {
-		generalSatisfaction += totalRenewableRatio * 10.0; // Bonus pour un ratio élevé de renouvelables
-	}
-	else {
-		generalSatisfaction -= (1.0 - totalRenewableRatio) * 10.0; // Pénalité pour un ratio faible de renouvelables
-	}
+	//double totalRenewableRatio = renewableProduction / totalProduction;
+	//if (totalRenewableRatio > 0.3) {
+	//generalSatisfaction += totalRenewableRatio * 10.0; // Bonus pour un ratio élevé de renouvelables
+	//}
+	//else {
+	//generalSatisfaction -= (1.0 - totalRenewableRatio) * 10.0; // Pénalité pour un ratio faible de renouvelables
+	//}
 
-	// S'assurer que la satisfaction reste dans les limites [0, 100]
-	if (generalSatisfaction > 100.0) generalSatisfaction = 100.0;
+	// S'assurer que la satisfaction reste dans les limites [0, 10]
+	if (generalSatisfaction > 10.0) generalSatisfaction = 10.0;
 	//if (generalSatisfaction < 0.0) generalSatisfaction = 0.0;
+
+	generalSatisfaction = fmax(0.0, fmin(generalSatisfaction, 10.0)); //sinon c'était négatif
 
 	return generalSatisfaction;
 
@@ -416,9 +436,9 @@ void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float fu
 
 
 void display_datas(SDL_Renderer* renderer) {
-	SDL_Rect rect_datas1 = { 50,175 , L_FENETRE, 50 };
-	SDL_Rect rect_datas2 = { 50,210 , L_FENETRE, 50 };
-	SDL_Rect rect_datas3 = { 50,245 , L_FENETRE, 50 };
+	SDL_Rect rect_datas1 = { 50,75 , L_FENETRE, 50 };
+	SDL_Rect rect_datas2 = { 50,110 , L_FENETRE, 50 };
+	SDL_Rect rect_datas3 = { 50,145 , L_FENETRE, 50 };
 
 	char description[250], description2[150], description3[150];
 	snprintf(description, sizeof(description),
@@ -427,7 +447,7 @@ void display_datas(SDL_Renderer* renderer) {
 		generalCO2, totalProduction);
 	snprintf(description2, sizeof(description2),
 		"Current demand : %.2f MWh  "
-		"Current satisfaction : %2.f/100",
+		"Current satisfaction : %2.f/10",
 		totalDemand, generalSatisfaction);
 	snprintf(description3, sizeof(description3),
 		"Actual wind %.2f Km/h  "

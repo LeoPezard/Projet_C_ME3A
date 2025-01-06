@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
     SDL_Rect info1 = { 945, 30 };
     SDL_Rect info2 = { 930, 50 };
     SDL_Rect info3 = { 930, 70 };
+    SDL_Rect info4 = { 450, 300 };
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
 
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
     // intervalle = durée de temps en ms d'actualisation
 
     Energyplant plants[6] = {
-    {"Gas Power Plant", FOSSIL, 300.0, 28.0, 4.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
+    {"Gas Power Plant", FOSSIL, 300.0, 28.0,28.0, 4.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -58,7 +59,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Solar Power Plant", SOLAR, 50.0, 18.24, 7.5, 10.0, 60.0, 0.7, 0, 1, 200, 425, 200, 200,
+    {"Solar Power Plant", SOLAR, 50.0, 18.24,18.24, 7.5, 10.0, 60.0, 0.7, 0, 1, 200, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Wind Power Plant", WIND, 60.0, 18.0, 7.5, 10.0, 60.0, 0.7, 0, 1, 400, 425, 200, 200,
+    {"Wind Power Plant", WIND, 60.0, 18.0,18.0, 7.5, 10.0, 60.0, 0.7, 0, 1, 400, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -74,7 +75,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
+    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6,186.6, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -82,7 +83,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Hydraulic Power Plant", HYDRO, 100.0, 48.0, 8.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
+    {"Hydraulic Power Plant", HYDRO, 100.0, 48.0,48.0, 8.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -90,7 +91,7 @@ int main(int argc, char* argv[])
             {{40, 50, 20, 20}, STORAGE_MINUS}
         },
     },
-    {"Battery Power Plant", BATTERY, 50.0, 25.0, 6.0, 80.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
+    {"Battery Power Plant", BATTERY, 50.0, 5.0,5.0, 6.0, 80.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
         {
             {{10, 10, 20, 20}, POWER_PLUS},
             {{40, 10, 20, 20}, POWER_MINUS},
@@ -170,8 +171,9 @@ int main(int argc, char* argv[])
     };
     
 
-    char message1[256], message2[35], message3[256];
+    char message1[256], message2[35], message3[256], message4[256];
     snprintf(message1, sizeof(message1), "Event of the day :");
+    snprintf(message4, sizeof(message4), "");
 
     bool clicked[6] = { false, false, false, false, false, false };
     int offsetSin = 0;
@@ -208,8 +210,8 @@ int main(int argc, char* argv[])
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    clickImageButtons(rendu, event, images, clicked, buttons, message2, sizeof(message2), white, plants);
-                    clickButtonApp(rendu, event, appButtons, message2, sizeof(message2), white);
+                    clickImageButtons(rendu, event, images, clicked, buttons, message4, sizeof(message4), white, plants);
+                    clickButtonApp(rendu, event, appButtons, message4, sizeof(message4), white);
 
                     break;
 
@@ -272,6 +274,7 @@ int main(int argc, char* argv[])
             render_text(rendu, font2, message1, black, info1);
             render_text(rendu, font2, message2, black, info2);
             render_text(rendu, font3, message3, black, info3);
+            render_text(rendu, font1, message4, black, info4);
             char hour_text[256];
 
             snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
