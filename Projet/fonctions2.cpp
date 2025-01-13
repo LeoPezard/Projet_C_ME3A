@@ -62,7 +62,6 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 }
 
 
-
 void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6],
 	bool clicked[6], BUTTON buttons[4][6], char message[], size_t messageSize, SDL_Color& white,
 	Energyplant plants[6]) {
@@ -70,7 +69,30 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 		int x = event.button.x;
 		int y = event.button.y;
 
-		bool imageClicked = false;
+		// Vérification des clics sur les boutons des images actives en priorité
+		for (int i = 0; i < 6; i++) {
+			if (clicked[i]) {  // Vérifier uniquement les boutons des images actives
+				for (int j = 0; j < 4; j++) {
+					if (isRectClicked(x, y, buttons[j][i].rect)) {
+						// Effectuer l'action du bouton
+						if (buttons[j][i].type == POWER_PLUS) {
+							snprintf(message, messageSize, "Augmentation de la production");
+						}
+						else if (buttons[j][i].type == POWER_MINUS) {
+							snprintf(message, messageSize, "Diminution de la production");
+						}
+						else if (buttons[j][i].type == STORAGE_PLUS) {
+							snprintf(message, messageSize, "Stockage de l'energie");
+						}
+						else if (buttons[j][i].type == STORAGE_MINUS) {
+							snprintf(message, messageSize, "Reduction du stockage");
+						}
+						update_production(&plants[i], buttons[j][i].type, plants);
+						return; // Sortir de la fonction après avoir traité le clic sur un bouton
+					}
+				}
+			}
+		}
 
 		// Vérification des clics sur les images
 		for (int i = 0; i < 6; i++) {
@@ -83,20 +105,15 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 				else {
 					images[i].alpha = 255;
 					clicked[i] = true;
-				}
-				imageClicked = true;
 
-				// Positionner les boutons sous l'image cliquée
-				for (int i = 0; i < 6; i++) {
-					if (isRectClicked(x, y, images[i].rect)) {
-						for (int j = 0; j < 2; j++) {
-							buttons[j][i].rect.x = images[i].rect.x + j * (buttons[j][i].rect.w + 10);
-							buttons[j][i].rect.y = images[i].rect.y + images[i].rect.h + 10;
-						}
-						for (int j = 2; j < 4; j++) {
-							buttons[j][i].rect.x = images[i].rect.x + (j - 2) * (buttons[j][i].rect.w + 10);
-							buttons[j][i].rect.y = images[i].rect.y + images[i].rect.h + 50;
-						}
+					// Positionner les boutons sous l'image cliquée
+					for (int j = 0; j < 2; j++) {
+						buttons[j][i].rect.x = images[i].rect.x + j * (buttons[j][i].rect.w + 10);
+						buttons[j][i].rect.y = images[i].rect.y + images[i].rect.h + 10;
+					}
+					for (int j = 2; j < 4; j++) {
+						buttons[j][i].rect.x = images[i].rect.x + (j - 2) * (buttons[j][i].rect.w + 10);
+						buttons[j][i].rect.y = images[i].rect.y + images[i].rect.h + 50;
 					}
 				}
 			}
@@ -106,40 +123,9 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 			}
 			SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 		}
-
-		// Vérification des clics sur les boutons des images
-		for (int i = 0; i < 6; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (isRectClicked(x, y, buttons[j][i].rect)) {
-					if (buttons[j][i].type == POWER_PLUS) {
-						snprintf(message, messageSize, "Augmentation de la production");
-					}
-					else if (buttons[j][i].type == POWER_MINUS) {
-						snprintf(message, messageSize, "Diminution de la production");
-					}
-					else if (buttons[j][i].type == STORAGE_PLUS) {
-						snprintf(message, messageSize, "Stockage de l'energie");
-					}
-					else if (buttons[j][i].type == STORAGE_MINUS) {
-						snprintf(message, messageSize, "Reduction du stockage");
-					}
-					update_production(&plants[i], buttons[j][i].type, plants);
-				}
-			}
-		}
-
-		// Affichage des boutons sous l'image cliquée
-		if (imageClicked) {
-			for (int i = 0; i < 5; i++) {
-				if (clicked[i]) {
-					for (int j = 0; j < 4; j++) {
-						draw_button(renderer, buttons[j][i]);
-					}
-				}
-			}
-		}
 	}
 }
+
 
 void handleKeyDown(SDL_Event& event, int continuer) {
 	switch (event.key.keysym.sym) {

@@ -32,7 +32,7 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 			plants[5].currentProduction += (5.0 / 100) * plant->maximumProduction;
 		}
 		else if (buttontype == STORAGE_MINUS) {
-			if (plant->currentProduction<plant->initialProduction) {
+			if (plant->currentProduction < plant->initialProduction) {
 				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
 			}
 		}
