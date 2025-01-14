@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
 
-            if (hour - heuremessage == 1) {
+            if (hour - heuremessage == 2) {
                 snprintf(message4, sizeof(message4), "");
             }
 
