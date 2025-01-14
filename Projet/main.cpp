@@ -19,6 +19,7 @@ float totalDemand = 55000.0; // demande minimale (nuit, avant 6h)
 double wind = 0;
 double cost = 0;
 int realTime = 300; // Temps pour 1 heure
+int heuremessage = 0;
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -278,6 +279,10 @@ int main(int argc, char* argv[])
             draw_button(rendu, button1);
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
+
+            if (hour - heuremessage == 1) {
+                snprintf(message4, sizeof(message4), "");
+            }
 
             // affichage du message
             draw_events(rendu, chosenEvent);
