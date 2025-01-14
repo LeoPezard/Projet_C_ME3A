@@ -111,7 +111,7 @@ void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_C
 bool isRectClicked(int x, int y, SDL_Rect button);
 void handleMouseMotion(SDL_Event& event, Image images[6], bool clicked[6]);
 void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6],
-    bool clicked[6], BUTTON buttons[4][6], char message[], size_t messageSize, SDL_Color& white,
+    bool clicked[6], char message[], size_t messageSize, SDL_Color& white,
     Energyplant plants[6]);
 void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[4],
     char message[], size_t messageSize, SDL_Color& white);
@@ -120,7 +120,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
 
 // !!!!!! Une seule plant en paramètre
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6]);
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[]);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
 

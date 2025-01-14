@@ -11,25 +11,26 @@ const char* imageList[] = {
 };
 
 
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6]) {
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[]) {
 	if (buttontype == POWER_PLUS) {
-		if (plant->type == FOSSIL || plant->type == HYDRO ||
-			plant->type == BATTERY) {
+		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY) {
 			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
+			plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
 		}
 	}
 	else if (buttontype == POWER_MINUS) {
-		if (plant->type == FOSSIL || plant->type == HYDRO ||
-			plant->type == BATTERY) {
+		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY) {
 			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
-
 		}
 	}
 	if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
 		if (buttontype == STORAGE_PLUS && 
 			plants[5].currentProduction + (5.0 / 100) * plant->maximumProduction < plants[5].maximumProduction) {
 			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
-			plants[5].currentProduction += (5.0 / 100) * plant->maximumProduction;
+			if (plants[5].storageRatio >= 100.0) {
+				snprintf(message, sizeof(message), "Stockage maximal atteint");
+			}
+			plants[5].storageRatio += (5.0/100) * plant->maximumProduction;
 		}
 		else if (buttontype == STORAGE_MINUS) {
 			if (plant->currentProduction < plant->initialProduction) {
@@ -42,6 +43,9 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 	}
 	else if (plant->currentProduction < 0) {
 		plant->currentProduction = 0;
+	}
+	if (plants[5].storageRatio >= 100.0) {
+		plants[5].storageRatio = 100.0;
 	}
 }
 
@@ -177,7 +181,7 @@ double current_satisfaction(Energyplant plants[6]) {
 	}
 	if (totalDemand > totalProduction) {
 		// Si la demande est supérieure à la production, pénalité proportionnelle
-		generalSatisfaction -= (totalDemand - totalProduction) / totalDemand * 20.0;
+		generalSatisfaction -= (totalDemand - totalProduction) / totalDemand * 5.0;
 	}
 	else {
 		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
@@ -248,7 +252,7 @@ void draw_events(SDL_Renderer* renderer, Event chosenEvent) {
 	SDL_RenderCopy(renderer, chosenEvent.image, NULL, &destRect);
 }
 void draw_button(SDL_Renderer* renderer, BUTTON button)
-{
+{	
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
 	if (button.type == POWER_PLUS)
 	{
@@ -372,14 +376,22 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 		images[i].rect.h = plant[i].height;            // Hauteur
 
 		// Définir la transparence
-		images[i].alpha = 180;  // Semi-transparent au début
+		images[i].alpha = 100;  // Semi-transparent au début
 		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 	}
 
 }
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]) {
 	for (int i = 0; i < 6; i++) {
-		float ratio = plants[i].currentProduction / plants[i].maximumProduction;
+		float ratio = 0.0;
+		switch (plants[i].type) {
+		case BATTERY:
+			ratio = plants[i].storageRatio / 100.0;
+			break;
+		default:
+			ratio = plants[i].currentProduction / plants[i].maximumProduction;
+			break;
+		}
 
 		// Définir la couleur en fonction des paliers du ratio
 		if (ratio >= 0.8) {
@@ -431,7 +443,7 @@ void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
 	}
 }
 void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
-	draw_arrow(renderer, 450, 30, currentDemand < futureDemand);
+	draw_arrow(renderer, 450, 30, currentDemand <= futureDemand);
 }
 
 
@@ -465,6 +477,12 @@ void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_
 		char description[128];
 		snprintf(description, sizeof(description), "Power : %.2f MWh", plants[i].currentProduction);
 		render_text(renderer, font, description, white, rect_description);
+		if (plants[i].type == BATTERY) {
+			SDL_Rect rect_description = { plants[i].x + 10, plants[i].y + 10 , plants[i].width, 50 };
+			char description[128];
+			snprintf(description, sizeof(description), "Capacity : %.2f %%", plants[i].storageRatio);
+			render_text(renderer, font, description, white, rect_description);
+		}
 	}
 
 }

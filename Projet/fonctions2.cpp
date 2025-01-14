@@ -13,7 +13,7 @@ void handleMouseMotion(SDL_Event& event, Image images[6], bool clicked[6]) {
 			images[i].alpha = 255;
 		}
 		else {
-			images[i].alpha = 180;
+			images[i].alpha = 100;
 		}
 		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 	}
@@ -63,7 +63,7 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 
 
 void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6],
-	bool clicked[6], BUTTON buttons[4][6], char message[], size_t messageSize, SDL_Color& white,
+	bool clicked[6], char message[], size_t messageSize, SDL_Color& white,
 	Energyplant plants[6]) {
 	if (event.button.button == SDL_BUTTON_LEFT) {
 		int x = event.button.x;
@@ -73,21 +73,21 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 		for (int i = 0; i < 6; i++) {
 			if (clicked[i]) {  // Vérifier uniquement les boutons des images actives
 				for (int j = 0; j < 4; j++) {
-					if (isRectClicked(x, y, buttons[j][i].rect)) {
+					if (isRectClicked(x, y, plants[i].buttons[j].rect)) {
 						// Effectuer l'action du bouton
-						if (buttons[j][i].type == POWER_PLUS) {
+						if (plants[i].buttons[j].type == POWER_PLUS) {
 							snprintf(message, messageSize, "Augmentation de la production");
 						}
-						else if (buttons[j][i].type == POWER_MINUS) {
+						else if (plants[i].buttons[j].type == POWER_MINUS) {
 							snprintf(message, messageSize, "Diminution de la production");
 						}
-						else if (buttons[j][i].type == STORAGE_PLUS) {
+						else if (plants[i].buttons[j].type == STORAGE_PLUS) {
 							snprintf(message, messageSize, "Stockage de l'energie");
 						}
-						else if (buttons[j][i].type == STORAGE_MINUS) {
+						else if (plants[i].buttons[j].type == STORAGE_MINUS) {
 							snprintf(message, messageSize, "Reduction du stockage");
 						}
-						update_production(&plants[i], buttons[j][i].type, plants);
+						update_production(&plants[i], plants[i].buttons[j].type, plants, message);
 						return; // Sortir de la fonction après avoir traité le clic sur un bouton
 					}
 				}
@@ -99,7 +99,7 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 			if (isRectClicked(x, y, images[i].rect)) {
 				// Si l'image est déjà cliquée, la rendre transparente
 				if (clicked[i]) {
-					images[i].alpha = 180;
+					images[i].alpha = 100;
 					clicked[i] = false;
 				}
 				else {
@@ -108,17 +108,17 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 
 					// Positionner les boutons sous l'image cliquée
 					for (int j = 0; j < 2; j++) {
-						buttons[j][i].rect.x = images[i].rect.x + j * (buttons[j][i].rect.w + 10);
-						buttons[j][i].rect.y = images[i].rect.y + images[i].rect.h + 10;
+						plants[i].buttons[j].rect.x = images[i].rect.x + j * (plants[i].buttons[j].rect.w + 10);
+						plants[i].buttons[j].rect.y = images[i].rect.y + images[i].rect.h + 10;
 					}
 					for (int j = 2; j < 4; j++) {
-						buttons[j][i].rect.x = images[i].rect.x + (j - 2) * (buttons[j][i].rect.w + 10);
-						buttons[j][i].rect.y = images[i].rect.y + images[i].rect.h + 50;
+						plants[i].buttons[j].rect.x = images[i].rect.x + (j - 2) * (plants[i].buttons[j].rect.w + 10);
+						plants[i].buttons[j].rect.y = images[i].rect.y + images[i].rect.h + 50;
 					}
 				}
 			}
 			else {
-				images[i].alpha = 180;
+				images[i].alpha = 100;
 				clicked[i] = false;
 			}
 			SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);

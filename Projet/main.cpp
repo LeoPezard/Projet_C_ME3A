@@ -18,7 +18,8 @@ double generalCost = 0;
 float totalDemand = 55000.0; // demande minimale (nuit, avant 6h)
 double wind = 0;
 double cost = 0;
-int realTime = 3000; // Temps pour 1 heure
+int realTime = 300; // Temps pour 1 heure
+
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 int main(int argc, char* argv[])
@@ -53,50 +54,50 @@ int main(int argc, char* argv[])
     Energyplant plants[6] = {
     {"Gas Power Plant", FOSSIL, 300.0, 28.0,28.0, 4.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
         {
-            {{10, 10, 20, 20}, POWER_PLUS},
-            {{40, 10, 20, 20}, POWER_MINUS},
-            {{10, 50, 20, 20}, STORAGE_PLUS},
-            {{40, 50, 20, 20}, STORAGE_MINUS}
+            {{100, 630, 30, 30}, POWER_PLUS},
+            {{350, 630, 30, 30}, POWER_MINUS},
+            {{10, 655, 30, 30}, STORAGE_PLUS},
+            {{250, 655, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Solar Power Plant", SOLAR, 50.0, 18.24,18.24, 7.5, 10.0, 60.0, 0.7, 0, 1, 200, 425, 200, 200,
         {
-            {{10, 10, 20, 20}, POWER_PLUS},
-            {{40, 10, 20, 20}, POWER_MINUS},
-            {{10, 50, 20, 20}, STORAGE_PLUS},
-            {{40, 50, 20, 20}, STORAGE_MINUS}
+            {{0, 0, 0, 0}, POWER_PLUS},
+            {{0, 0, 0, 0}, POWER_MINUS},
+            {{410, 655, 30, 30}, STORAGE_PLUS},
+            {{450, 655, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Wind Power Plant", WIND, 60.0, 18.0,18.0, 7.5, 10.0, 60.0, 0.7, 0, 1, 400, 425, 200, 200,
         {
-            {{10, 10, 20, 20}, POWER_PLUS},
-            {{40, 10, 20, 20}, POWER_MINUS},
-            {{10, 50, 20, 20}, STORAGE_PLUS},
-            {{40, 50, 20, 20}, STORAGE_MINUS}
+            {{0, 0, 0, 0}, POWER_PLUS},
+            {{0, 0, 0, 0}, POWER_MINUS},
+            {{610, 655, 30, 30}, STORAGE_PLUS},
+            {{650, 655, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6,186.6, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
         {
-            {{10, 10, 20, 20}, POWER_PLUS},
-            {{40, 10, 20, 20}, POWER_MINUS},
-            {{10, 50, 20, 20}, STORAGE_PLUS},
-            {{40, 50, 20, 20}, STORAGE_MINUS}
+            {{0, 0, 0, 0}, POWER_PLUS},
+            {{0, 0, 0, 0}, POWER_MINUS},
+            {{810, 655, 30, 30}, STORAGE_PLUS},
+            {{850, 655, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Hydraulic Power Plant", HYDRO, 100.0, 48.0,48.0, 8.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
         {
-            {{10, 10, 20, 20}, POWER_PLUS},
-            {{40, 10, 20, 20}, POWER_MINUS},
-            {{10, 50, 20, 20}, STORAGE_PLUS},
-            {{40, 50, 20, 20}, STORAGE_MINUS}
+            {{10, 630, 30, 30}, POWER_PLUS},
+            {{40, 630, 30, 30}, POWER_MINUS},
+            {{1010, 655, 30, 30}, STORAGE_PLUS},
+            {{1050, 655, 30, 30}, STORAGE_MINUS}
         },
     },
-    {"Battery Power Plant", BATTERY, 50.0, 5.0,5.0, 6.0, 80.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
+    {"Battery Power Plant", BATTERY, 50.0, 5.0,5.0, 6.0, 0.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
         {
-            {{10, 10, 20, 20}, POWER_PLUS},
-            {{40, 10, 20, 20}, POWER_MINUS},
-            {{10, 50, 20, 20}, STORAGE_PLUS},
-            {{40, 50, 20, 20}, STORAGE_MINUS}
+            {{10, 630, 30, 30}, POWER_PLUS},
+            {{40, 630, 30, 30}, POWER_MINUS},
+            {{1210, 0, 0, 0}, STORAGE_PLUS},
+            {{1250, 0, 0, 0}, STORAGE_MINUS},
         },
     }
     };
@@ -162,13 +163,6 @@ int main(int argc, char* argv[])
     BUTTON button2 = { {1030, 190, 75, 25}, SLOWER };
     BUTTON buttonQuit = { {L_FENETRE / 2, H_FENETRE - 30, 70, 30}, QUIT };
     BUTTON appButtons[4] = { button1, button2, buttonQuit, 0 };
-    BUTTON buttons[4][6] = {
-        // Initialisation des boutons POWER_PLUS sous chaque image
-        {{ {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS }, { {0, 0, 80, 30}, POWER_PLUS },{ {0, 0, 80, 30}, POWER_PLUS }},
-        {{ {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }, { {0, 0, 80, 30}, POWER_MINUS }},
-        {{ {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }, { {0, 0, 80, 30}, STORAGE_PLUS }},
-        {{ {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS }, { {0, 0, 80, 30}, STORAGE_MINUS },{ {0, 0, 80, 30}, STORAGE_MINUS }}
-    };
     
 
     char message1[256], message2[35], message3[256], message4[256];
@@ -210,7 +204,7 @@ int main(int argc, char* argv[])
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    clickImageButtons(rendu, event, images, clicked, buttons, message4, sizeof(message4), white, plants);
+                    clickImageButtons(rendu, event, images, clicked, message4, sizeof(message4), white, plants);
                     clickButtonApp(rendu, event, appButtons, message4, sizeof(message4), white);
 
                     break;
@@ -247,20 +241,36 @@ int main(int argc, char* argv[])
             for (int i = 0; i < 6; i++) {
                 SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
             }
+            //for (int i = 0; i < 6; i++) {
+            //    if (clicked[i] && (plants[i].stockable == 1 && plants[i].adjustable == 1)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+            //        for (int j = 0; j < 4; j++) {
+            //            draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
+            //        }
+            //    }
+            //    else if (clicked[i] && (plants[i].adjustable == 0)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+            //        for (int j = 2; j < 4; j++) {
+            //            draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
+            //        }
+            //    }
+            //    else if (clicked[i] && (plants[i].type == BATTERY)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+            //        for (int j = 0; j < 2; j++) {
+            //            draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
+            //        }
+            //    }
+            //}
             for (int i = 0; i < 6; i++) {
-                if (clicked[i] && (plants[i].stockable == 1 && plants[i].adjustable == 1)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
+                if (clicked[i]) {
                     for (int j = 0; j < 4; j++) {
-                        draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
-                    }
-                }
-                else if (clicked[i] && (plants[i].adjustable == 0)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
-                    for (int j = 2; j < 4; j++) {
-                        draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
-                    }
-                }
-                else if (clicked[i] && (plants[i].type == BATTERY)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
-                    for (int j = 0; j < 2; j++) {
-                        draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
+                        // Vérifie si le bouton est valide (ex. dimensions non nulles)
+                        if (plants[i].buttons[j].rect.w > 0 && plants[i].buttons[j].rect.h > 0) {
+                            printf("Button %d of plant %d -> x:%d, y:%d, w:%d, h:%d\n",
+                                j, i,
+                                plants[i].buttons[j].rect.x,
+                                plants[i].buttons[j].rect.y,
+                                plants[i].buttons[j].rect.w,
+                                plants[i].buttons[j].rect.h);
+                            draw_button(rendu, plants[i].buttons[j]);
+                        }
                     }
                 }
             }
