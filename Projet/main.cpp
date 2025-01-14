@@ -207,6 +207,7 @@ int main(int argc, char* argv[])
                 case SDL_MOUSEBUTTONDOWN:
                     clickImageButtons(rendu, event, images, clicked, message4, sizeof(message4), white, plants);
                     clickButtonApp(rendu, event, appButtons, message4, sizeof(message4), white);
+                    heuremessage = hour;
 
                     break;
 
