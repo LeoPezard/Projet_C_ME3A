@@ -107,22 +107,22 @@ double current_cost(Energyplant plants[6]) {
 	return cost;
 }
 
-float demand_at(int hour) { // en MW (données de la France)
+float demand_at(int hour) { // en MW (donnÃ©es de la France)
 	float demande = 0.0; // Pas totalDemand car modifie pour les utilisations des autres fct de demande 
-	if (hour > 1 && hour <= 10) { // augmentation progressive jusqu'à midi
+	if (hour > 1 && hour <= 10) { // augmentation progressive jusqu'Ã  midi
 		demande = (hour - 1) * 4000; // chaque heure augmente de 4000 MW
 	}
-	else if (hour > 10 && hour <= 16) { // stabilisation dans la journée
+	else if (hour > 10 && hour <= 16) { // stabilisation dans la journÃ©e
 		demande = 71000.0; // plateau autour de 71000 MW
 	}
-	else if (hour > 16 && hour <= 20) { // pic en soirée
+	else if (hour > 16 && hour <= 20) { // pic en soirÃ©e
 		demande = 75000.0; // pic maximal vers 18-20h
 	}
 	else if (hour > 20 || hour <= 1) { // baisse progressive la nuit
 		demande = 35000.0; // stabilisation la nuit
 	}
 
-	// Conversion pour les données PACA, puis en MWh
+	// Conversion pour les donnÃ©es PACA, puis en MWh
 	demande = (demande / 11.4) / 24.0;
 	return demande;
 }
@@ -154,7 +154,7 @@ double current_satisfaction(Energyplant plants[6]) {
 	generalSatisfaction = 0.0;
 
 
-	// Vérification de la production totale pour éviter une division par zéro
+	// VÃ©rification de la production totale pour Ã©viter une division par zÃ©ro
 	if (totalProduction <= 0.0) {
 		return 0.0; // Satisfaction nulle si aucune production
 	}
@@ -162,7 +162,7 @@ double current_satisfaction(Energyplant plants[6]) {
 	for (int i = 0; i < 6; i++) {
 		switch (plants[i].type) {
 		case FOSSIL:
-			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.6; // Réduction pour les fossiles
+			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.6; // RÃ©duction pour les fossiles
 
 			break;
 		case SOLAR:
@@ -172,42 +172,42 @@ double current_satisfaction(Energyplant plants[6]) {
 
 			break;
 		case NUCLEAR:
-			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.9; // Légère réduction pour le nucléaire
+			plants[i].currentSatisfaction = (plants[i].currentProduction / plants[i].maximumProduction) * 0.9; // LÃ©gÃ¨re rÃ©duction pour le nuclÃ©aire
 
 			break;
 		}
-		// Ajouter la satisfaction actuelle à la satisfaction globale
+		// Ajouter la satisfaction actuelle Ã  la satisfaction globale
 		generalSatisfaction += plants[i].currentSatisfaction;
 	}
 	if (totalDemand > totalProduction) {
-		// Si la demande est supérieure à la production, pénalité proportionnelle
+		// Si la demande est supÃ©rieure Ã  la production, pÃ©nalitÃ© proportionnelle
 		generalSatisfaction -= (totalDemand - totalProduction) / totalDemand * 5.0;
 	}
 	else {
-		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
+		// Si la production dÃ©passe la demande, bonus limitÃ© ou pÃ©nalitÃ© si trop excessif
 		double excessProductionRatio = (totalProduction - totalDemand) / totalDemand;
 		if (excessProductionRatio > 0.5) {
-			generalSatisfaction -= log10(1 + excessProductionRatio) * 10.0; // Pénalité douce pour encourager surprod par sécu
+			generalSatisfaction -= log10(1 + excessProductionRatio) * 10.0; // PÃ©nalitÃ© douce pour encourager surprod par sÃ©cu
 		}
 		else {
-			generalSatisfaction += excessProductionRatio * 10.0; // Bonus pour une production légèrement excédentaire
+			generalSatisfaction += excessProductionRatio * 10.0; // Bonus pour une production lÃ©gÃ¨rement excÃ©dentaire
 		}
 	}
 
-	// Ajustement basé sur le ratio renouvelable/non-renouvelable
+	// Ajustement basÃ© sur le ratio renouvelable/non-renouvelable
 	//double totalRenewableRatio = renewableProduction / totalProduction;
 	//if (totalRenewableRatio > 0.3) {
-	//generalSatisfaction += totalRenewableRatio * 10.0; // Bonus pour un ratio élevé de renouvelables
+	//generalSatisfaction += totalRenewableRatio * 10.0; // Bonus pour un ratio Ã©levÃ© de renouvelables
 	//}
 	//else {
-	//generalSatisfaction -= (1.0 - totalRenewableRatio) * 10.0; // Pénalité pour un ratio faible de renouvelables
+	//generalSatisfaction -= (1.0 - totalRenewableRatio) * 10.0; // PÃ©nalitÃ© pour un ratio faible de renouvelables
 	//}
 
 	// S'assurer que la satisfaction reste dans les limites [0, 10]
 	if (generalSatisfaction > 10.0) generalSatisfaction = 10.0;
 	//if (generalSatisfaction < 0.0) generalSatisfaction = 0.0;
 
-	generalSatisfaction = fmax(0.0, fmin(generalSatisfaction, 10.0)); //sinon c'était négatif
+	generalSatisfaction = fmax(0.0, fmin(generalSatisfaction, 10.0)); //sinon c'Ã©tait nÃ©gatif
 
 	return generalSatisfaction;
 
@@ -224,13 +224,13 @@ void create_wind() { // Elle marche
 }
 void create_event(Event events[], int event_count, float* totalDemand, int hour,
 	char message[],char message3[], size_t messageSize) {
-	// Choisir un événement aléatoire
+	// Choisir un Ã©vÃ©nement alÃ©atoire
 	int eventIndex = rand() % event_count;
 	chosenEvent = events[eventIndex];
 
-	// Vérifier si l'événement est applicable à l'heure actuelle
+	// VÃ©rifier si l'Ã©vÃ©nement est applicable Ã  l'heure actuelle
 	if (hour >= chosenEvent.startHour && hour <= chosenEvent.endHour) {
-		// Appliquer l'augmentation/diminution à totalDemand
+		// Appliquer l'augmentation/diminution Ã  totalDemand
 		if (chosenEvent.type == INCREASE) {
 			*totalDemand += chosenEvent.value;
 		}
@@ -298,16 +298,16 @@ void draw_button(SDL_Renderer* renderer, BUTTON button)
 	render_text(renderer, font2, label, black, textRect);
 }
 void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour) {
-	// Définir les couleurs pour les fonds
+	// DÃ©finir les couleurs pour les fonds
 	if (currentHour > 7 && currentHour < 19) {
 		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Jaune clair
 		SDL_Rect topRect = { sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h / 2 };
-		SDL_RenderFillRect(renderer, &topRect); // Colorier la moitié supérieure
+		SDL_RenderFillRect(renderer, &topRect); // Colorier la moitiÃ© supÃ©rieure
 	}
 	else {
 		SDL_SetRenderDrawColor(renderer, 25, 25, 112, 255); // Bleu nuit
 		SDL_Rect bottomRect = { sinusRect.x, sinusRect.y + sinusRect.h / 2, sinusRect.w, sinusRect.h / 2 };
-		SDL_RenderFillRect(renderer, &bottomRect); // Colorier la moitié inférieure
+		SDL_RenderFillRect(renderer, &bottomRect); // Colorier la moitiÃ© infÃ©rieure
 	}
 
 	// Dessiner les bordures du rectangle
@@ -315,21 +315,21 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2,
 		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2); // Ligne des abscisses
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
-		sinusRect.x + sinusRect.w, sinusRect.y); // Bordure supérieure
+		sinusRect.x + sinusRect.w, sinusRect.y); // Bordure supÃ©rieure
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
 		sinusRect.x, sinusRect.y + sinusRect.h); // Bordure gauche
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure inférieure
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure infÃ©rieure
 	SDL_RenderDrawLine(renderer, sinusRect.x + sinusRect.w, sinusRect.y,
 		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure droite
 
-	// Dessiner la sinusoïde
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Couleur orangée (sinusoïde)
+	// Dessiner la sinusoÃ¯de
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Couleur orangÃ©e (sinusoÃ¯de)
 	double displayPeriod = 12.0; // afficher que les 12 prochaines heures
-	double hoursPerPixel = displayPeriod / sinusRect.w; // Conversion des pixels en heures (par rapport à la période affichée)
+	double hoursPerPixel = displayPeriod / sinusRect.w; // Conversion des pixels en heures (par rapport Ã  la pÃ©riode affichÃ©e)
 	for (int x = 0; x < sinusRect.w; x++) {
 		double time = currentHour + x * hoursPerPixel; // Heure correspondant au pixel x
-		double value = sin(SIN_FREQUENCY * (time - 7)); // Décalage pour commencer à 7h
+		double value = sin(SIN_FREQUENCY * (time - 7)); // DÃ©calage pour commencer Ã  7h
 		int y = (int)(amplitude * value);
 		y = sinusRect.y + sinusRect.h / 2 - y; // Ajuster l'origine au centre du rectangle
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
@@ -369,14 +369,14 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 			exit(EXIT_FAILURE);
 		}
 
-		// Définir la position et la taille des images
+		// DÃ©finir la position et la taille des images
 		images[i].rect.x = plant[i].x;  // Position X
 		images[i].rect.y = plant[i].y;            // Position Y
 		images[i].rect.w = plant[i].width;            // Largeur
 		images[i].rect.h = plant[i].height;            // Hauteur
 
-		// Définir la transparence
-		images[i].alpha = 100;  // Semi-transparent au début
+		// DÃ©finir la transparence
+		images[i].alpha = 100;  // Semi-transparent au dÃ©but
 		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 	}
 
@@ -393,7 +393,7 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 			break;
 		}
 
-		// Définir la couleur en fonction des paliers du ratio
+		// DÃ©finir la couleur en fonction des paliers du ratio
 		if (ratio >= 0.8) {
 			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
 		}
@@ -411,7 +411,7 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 		}
 
 		// Dessiner le rectangle
-		int adjustedHeight = (int)(plants[i].height * ratio); // Hauteur ajustée
+		int adjustedHeight = (int)(plants[i].height * ratio); // Hauteur ajustÃ©e
 		int yOffset = plants[i].y + 100 + (plants[i].height - adjustedHeight); // Ajuster la position verticale
 
 		// Dessiner le rectangle
@@ -475,7 +475,7 @@ void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_
 	for (int i = 0; i < 6; i++) {
 		SDL_Rect rect_description = { plants[i].x + 10, plants[i].y - 15 , plants[i].width, 50 };
 		char description[128];
-		snprintf(description, sizeof(description), "Power : %.2f MWh", plants[i].currentProduction);
+		snprintf(description, sizeof(description), "Power : %.2f MW", plants[i].currentProduction);
 		render_text(renderer, font, description, white, rect_description);
 		if (plants[i].type == BATTERY) {
 			SDL_Rect rect_description = { plants[i].x + 10, plants[i].y + 10 , plants[i].width, 50 };
@@ -495,7 +495,7 @@ void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_C
 		return;
 	}
 	if (!texture) {
-		printf("Erreur lors de la création de la texture du texte : %s\n", SDL_GetError());
+		printf("Erreur lors de la crÃ©ation de la texture du texte : %s\n", SDL_GetError());
 		SDL_FreeSurface(surface);
 		return;
 	}
