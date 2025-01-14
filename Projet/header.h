@@ -67,17 +67,17 @@ typedef struct
 
 typedef struct
 {
-    char name[256];   // Nom de l'événement
+    char name[256];   // Nom de l'Ã©vÃ©nement
     int type;   // Type ("increase" ou "decrease")
-    int value;    // Valeur associée
-    int startHour; // Heure de début pour cet événement
+    int value;    // Valeur associÃ©e
+    int startHour; // Heure de dÃ©but pour cet Ã©vÃ©nement
     int endHour;
     SDL_Texture* image;
 } Event;
 
 // Prototypes des fonctions
 
-// Valeurs générales calculées
+// Valeurs gÃ©nÃ©rales calculÃ©es
 
 
 
@@ -119,7 +119,7 @@ void handleKeyDown(SDL_Event& event, int continuer);
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
 
-// !!!!!! Une seule plant en paramètre
+// !!!!!! Une seule plant en paramÃ¨tre
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[]);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
@@ -146,6 +146,7 @@ extern double cost;
 extern SDL_Texture* sunTexture;
 extern SDL_Texture* moonTexture;
 extern double wind;
+extern int heuremessage;
 
 
 
