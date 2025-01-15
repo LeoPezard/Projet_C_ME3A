@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|solutionrelative:Projet\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\fonctions.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|solutionrelative:Projet\\fonctions.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|solutionrelative:Projet\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C78059E9-D5AC-4223-B0B6-2D90062B2E0A}|Projet\\Projet.vcxproj|C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\header.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
@@ -36,20 +36,20 @@
               "RelativeDocumentMoniker": "Projet\\fonctions2.cpp",
               "ToolTip": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\fonctions2.cpp",
               "RelativeToolTip": "Projet\\fonctions2.cpp",
-              "ViewState": "AgIAABQAAAAAAAAAAAAAAFMAAAA7AAAAAAAAAA==",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAAFgAAABYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-12-18T14:52:31.935Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "fonctions.cpp",
               "DocumentMoniker": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\fonctions.cpp",
               "RelativeDocumentMoniker": "Projet\\fonctions.cpp",
               "ToolTip": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\fonctions.cpp",
               "RelativeToolTip": "Projet\\fonctions.cpp",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAcwB8AAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAAAMwBIAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-12-12T08:59:33.261Z",
               "EditorCaption": ""
@@ -62,20 +62,20 @@
               "RelativeDocumentMoniker": "Projet\\header.h",
               "ToolTip": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\header.h",
               "RelativeToolTip": "Projet\\header.h",
-              "ViewState": "AgIAAGsAAAAAAAAAAAAcwHoAAABrAAAAAAAAAA==",
+              "ViewState": "AgIAAFsAAAAAAAAAAAAMwGYAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-12-12T09:00:44.838Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\main.cpp",
               "RelativeDocumentMoniker": "Projet\\main.cpp",
               "ToolTip": "C:\\Users\\33783\\Desktop\\ECOLE\\POLYTECH\\ME\\Semestre 5\\INFO\\LANGUAGE_C\\PROJET_C\\Projet\\main.cpp",
               "RelativeToolTip": "Projet\\main.cpp",
-              "ViewState": "AgIAAJsAAAAAAAAAAAAMwKYAAABBAAAAAAAAAA==",
+              "ViewState": "AgIAAJcAAAAAAAAAAAAAAJ4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-12-11T20:11:22.292Z",
               "EditorCaption": ""

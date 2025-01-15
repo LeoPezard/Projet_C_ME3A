@@ -1,7 +1,6 @@
 ﻿#include"header.h"
 
 
-
 TTF_Font* font1 = NULL;
 TTF_Font* font2 = NULL;
 TTF_Font* font3 = NULL;
@@ -21,6 +20,7 @@ double cost = 0;
 int realTime = 300; // Temps pour 1 heure
 int heuremessage = 0;
 
+
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 int main(int argc, char* argv[])
@@ -38,11 +38,11 @@ int main(int argc, char* argv[])
     SDL_Rect destination = { 0,0,L_FENETRE,H_FENETRE };
     SDL_Rect tvRect = { 850,-25,350,250 };
     SDL_Rect sinusRect = { 900, 225, 250, 150 };
-    SDL_Rect HourRect = { 990,135 };
+    SDL_Rect HourRect = { 795,10 };
     SDL_Rect info1 = { 945, 30 };
     SDL_Rect info2 = { 930, 50 };
     SDL_Rect info3 = { 930, 70 };
-    SDL_Rect info4 = { 450, 300 };
+    SDL_Rect info4 = { 50, 280 };
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
 
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
     };
     // 2) Test de la librairie Image
     //-----------------------------
-    texture_fond = IMG_LoadTexture(rendu, "./assets/provence.jpg");
+    texture_fond = IMG_LoadTexture(rendu, "./assets/provence.png");
     tv = IMG_LoadTexture(rendu, "./assets/tv.png");
     sun = IMG_LoadTexture(rendu, "./assets/sun2.png");
     moon = IMG_LoadTexture(rendu, "./assets/moon.png");
@@ -235,6 +235,7 @@ int main(int argc, char* argv[])
             // début de la zone d'affichage
             SDL_RenderClear(rendu);
 
+
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
             SDL_RenderCopy(rendu, tv, NULL, &tvRect);
 
@@ -243,34 +244,12 @@ int main(int argc, char* argv[])
             for (int i = 0; i < 6; i++) {
                 SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
             }
-            //for (int i = 0; i < 6; i++) {
-            //    if (clicked[i] && (plants[i].stockable == 1 && plants[i].adjustable == 1)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
-            //        for (int j = 0; j < 4; j++) {
-            //            draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
-            //        }
-            //    }
-            //    else if (clicked[i] && (plants[i].adjustable == 0)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
-            //        for (int j = 2; j < 4; j++) {
-            //            draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
-            //        }
-            //    }
-            //    else if (clicked[i] && (plants[i].type == BATTERY)) {  // Afficher les boutons uniquement si l'image correspondante est cliquée
-            //        for (int j = 0; j < 2; j++) {
-            //            draw_button(rendu, buttons[j][i]);  // Dessiner chaque bouton sous l'image
-            //        }
-            //    }
-            //}
+            
             for (int i = 0; i < 6; i++) {
                 if (clicked[i]) {
                     for (int j = 0; j < 4; j++) {
-                        // Vérifie si le bouton est valide (ex. dimensions non nulles)
+                        // Vérifie si le bouton est valide (ex. dimensions non nulles) pour ne pas écrire les '+' et '-' dans le vide
                         if (plants[i].buttons[j].rect.w > 0 && plants[i].buttons[j].rect.h > 0) {
-                            printf("Button %d of plant %d -> x:%d, y:%d, w:%d, h:%d\n",
-                                j, i,
-                                plants[i].buttons[j].rect.x,
-                                plants[i].buttons[j].rect.y,
-                                plants[i].buttons[j].rect.w,
-                                plants[i].buttons[j].rect.h);
                             draw_button(rendu, plants[i].buttons[j]);
                         }
                     }
@@ -280,7 +259,7 @@ int main(int argc, char* argv[])
             draw_button(rendu, button1);
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
-
+            // Effacer le message d'information au bout de 2heures
             if (hour - heuremessage == 2) {
                 snprintf(message4, sizeof(message4), "");
             }

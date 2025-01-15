@@ -10,13 +10,63 @@ const char* imageList[] = {
 	"charbon.png",
 };
 
+void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
+	// Calcul de la vitesse en pixels par milliseconde
+	float deltaX = endX - startX;
+	float deltaY = endY - startY;
+	int steps = durationMs / 16; // Nombre d'itérations pour ~60 FPS
 
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[]) {
+	float stepX = deltaX / steps;
+	float stepY = deltaY / steps;
+
+	float currentX = startX;
+	float currentY = startY;
+
+	for (int i = 0; i <= steps; ++i) {
+		// Dessiner un éclair sans effacer l'écran
+		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
+
+		// Coordonnées de l'éclair (forme en zigzag)
+		SDL_Point lightning[] = {
+			{ (int)currentX, (int)currentY },
+			{ (int)(currentX + 10), (int)(currentY + 20) },
+			{ (int)(currentX - 10), (int)(currentY + 40) },
+			{ (int)(currentX + 10), (int)(currentY + 60) },
+			{ (int)(currentX - 10), (int)(currentY + 80) }
+		};
+
+		// Tracer l'éclair
+		SDL_RenderDrawLines(renderer, lightning, sizeof(lightning) / sizeof(lightning[0]));
+
+		// Afficher les modifications
+		SDL_RenderPresent(renderer);
+
+		// Attendre un intervalle pour maintenir 60 FPS
+		SDL_Delay(16);
+
+		// Mettre à jour la position actuelle
+		currentX += stepX;
+		currentY += stepY;
+	}
+}
+
+
+
+
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6],char message[], SDL_Renderer* renderer) {
 	if (buttontype == POWER_PLUS) {
-		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY) {
+		if (plant->type == FOSSIL || plant->type == HYDRO) {
 			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-			plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
+			animateLightning(renderer, plant->x+plant->width/2, plant->y, 600, 300, 100);
 		}
+		else if (plant->type == BATTERY) {
+			if (plant->storageRatio >= 5.0) {
+				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
+				plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
+				animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
+			}
+		}
+		
 	}
 	else if (buttontype == POWER_MINUS) {
 		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY) {

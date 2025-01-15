@@ -62,9 +62,8 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 }
 
 
-void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6],
-	bool clicked[6], char message[], size_t messageSize, SDL_Color& white,
-	Energyplant plants[6]) {
+void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],bool clicked[],char message[],
+	size_t messageSize,SDL_Color color,Energyplant plants[]) {
 	if (event.button.button == SDL_BUTTON_LEFT) {
 		int x = event.button.x;
 		int y = event.button.y;
@@ -87,7 +86,7 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event& event, Image images[6]
 						else if (plants[i].buttons[j].type == STORAGE_MINUS) {
 							snprintf(message, messageSize, "Reduction du stockage");
 						}
-						update_production(&plants[i], plants[i].buttons[j].type, plants, message);
+						update_production(&plants[i], plants[i].buttons[j].type, plants, message, renderer);
 						return; // Sortir de la fonction après avoir traité le clic sur un bouton
 					}
 				}
