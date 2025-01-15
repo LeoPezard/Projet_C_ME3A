@@ -51,11 +51,9 @@ void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, 
 }
 
 
-
-
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6],char message[], SDL_Renderer* renderer) {
-	if (buttontype == POWER_PLUS) {
-		if (plant->type == FOSSIL || plant->type == HYDRO) {
+	if (buttontype == POWER_PLUS && plant->currentProduction < plant->maximumProduction) {
+		if (plant->type == FOSSIL || plant->type == HYDRO ) {
 			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
 			animateLightning(renderer, plant->x+plant->width/2, plant->y, 600, 300, 100);
 		}
