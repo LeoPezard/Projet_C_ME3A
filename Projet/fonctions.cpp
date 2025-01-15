@@ -10,45 +10,6 @@ const char* imageList[] = {
 	"charbon.png",
 };
 
-void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
-	// Calcul de la vitesse en pixels par milliseconde
-	float deltaX = endX - startX;
-	float deltaY = endY - startY;
-	int steps = durationMs / 16; // Nombre d'itérations pour ~60 FPS
-
-	float stepX = deltaX / steps;
-	float stepY = deltaY / steps;
-
-	float currentX = startX;
-	float currentY = startY;
-
-	for (int i = 0; i <= steps; ++i) {
-		// Dessiner un éclair sans effacer l'écran
-		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
-
-		// Coordonnées de l'éclair (forme en zigzag)
-		SDL_Point lightning[] = {
-			{ (int)currentX, (int)currentY },
-			{ (int)(currentX + 10), (int)(currentY + 20) },
-			{ (int)(currentX - 10), (int)(currentY + 40) },
-			{ (int)(currentX + 10), (int)(currentY + 60) },
-			{ (int)(currentX - 10), (int)(currentY + 80) }
-		};
-
-		// Tracer l'éclair
-		SDL_RenderDrawLines(renderer, lightning, sizeof(lightning) / sizeof(lightning[0]));
-
-		// Afficher les modifications
-		SDL_RenderPresent(renderer);
-
-		// Attendre un intervalle pour maintenir 60 FPS
-		SDL_Delay(16);
-
-		// Mettre à jour la position actuelle
-		currentX += stepX;
-		currentY += stepY;
-	}
-}
 
 
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6],char message[], SDL_Renderer* renderer) {
@@ -72,13 +33,18 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 		}
 	}
 	if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
-		if (buttontype == STORAGE_PLUS && 
-			plants[5].currentProduction + (5.0 / 100) * plant->maximumProduction < plants[5].maximumProduction) {
+		if (buttontype == STORAGE_PLUS && plants[5].storageRatio < 100.0 ){
 			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
+			animateLightning(renderer, plant->x + plant->width / 2, plant->y+plant->height, 
+				plant->x + plant->width / 2 , plant->y + plant->height +100, 100);
+			animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
+				plants[5].x+plants[5].width/2, plants[5].y+plants[5].height+100, 100);
+			plants[5].storageRatio += (5.0 / 100) * plant->maximumProduction;
 			if (plants[5].storageRatio >= 100.0) {
+				plants[5].storageRatio = 100.0;
 				snprintf(message, sizeof(message), "Stockage maximal atteint");
 			}
-			plants[5].storageRatio += (5.0/100) * plant->maximumProduction;
+			
 		}
 		else if (buttontype == STORAGE_MINUS) {
 			if (plant->currentProduction < plant->initialProduction) {
@@ -91,12 +57,8 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 	}
 	else if (plant->currentProduction < 0) {
 		plant->currentProduction = 0;
-	}
-	if (plants[5].storageRatio >= 100.0) {
-		plants[5].storageRatio = 100.0;
-	}
+	} 
 }
-
 
 void update_co2(Energyplant plants[6]) {
 	for (int i = 0; i < 5;i++) {
@@ -492,6 +454,41 @@ void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
 }
 void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
 	draw_arrow(renderer, 450, 30, currentDemand <= futureDemand);
+}
+void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
+	// Calcul de la vitesse en pixels par milliseconde
+	float deltaX = endX - startX;
+	float deltaY = endY - startY;
+	int steps = durationMs / 16; // Nombre d'itérations pour ~60 FPS
+
+	float stepX = deltaX / steps;
+	float stepY = deltaY / steps;
+
+	float currentX = startX;
+	float currentY = startY;
+
+	for (int i = 0; i <= steps; ++i) {
+		// Dessiner un éclair sans effacer l'écran
+		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
+
+		// Coordonnées de l'éclair (forme en zigzag)
+		SDL_Point lightning[] = {
+			{ (int)currentX, (int)currentY },
+			{ (int)(currentX - 10), (int)(currentY + 20) },
+			{ (int)(currentX), (int)(currentY + 20) },
+			{ (int)(currentX - 10), (int)(currentY + 30) },
+			{ (int)(currentX - 20), (int)(currentY + 40) }
+		};
+
+		// Tracer l'éclair
+		SDL_RenderDrawLines(renderer, lightning, sizeof(lightning) / sizeof(lightning[0]));
+		SDL_RenderPresent(renderer);
+
+		SDL_Delay(16);
+
+		currentX += stepX;
+		currentY += stepY;
+	}
 }
 
 
