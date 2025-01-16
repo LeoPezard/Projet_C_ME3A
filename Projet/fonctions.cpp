@@ -198,10 +198,10 @@ double current_satisfaction(Energyplant plants[6]) {
 		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
 		double excessProductionRatio = (totalProduction - totalDemand) / totalDemand;
 		if (excessProductionRatio > 0.5) {
-			generalSatisfaction -= log10(1 + excessProductionRatio) * 10.0; // Pénalité douce pour encourager surprod par sécu
+			generalSatisfaction -= log10(1 + excessProductionRatio) * 20.0; // Pénalité douce pour encourager surprod par sécu
 		}
 		else {
-			generalSatisfaction += excessProductionRatio * 10.0; // Bonus pour une production légèrement excédentaire
+			generalSatisfaction += excessProductionRatio * 20.0; // Bonus pour une production légèrement excédentaire
 		}
 	}
 
