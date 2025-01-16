@@ -1,12 +1,14 @@
 ﻿  fonctions.cpp
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(15,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(16,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(22,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(23,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(159,24): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(172,29): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(195,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(401,40): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(435,35): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(438,40): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(122,21): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(128,21): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(131,21): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(138,29): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(160,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(366,40): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(444,15): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(445,17): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(540,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(541,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(547,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(548,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
   Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\x64\Debug\Projet.exe

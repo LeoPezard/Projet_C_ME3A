@@ -17,7 +17,7 @@ double generalCost = 0;
 float totalDemand = 55000.0; // demande minimale (nuit, avant 6h)
 double wind = 0;
 double cost = 0;
-int realTime = 300; // Temps pour 1 heure
+int realTime = 3000; // Temps pour 1 heure
 int heuremessage = 0;
 
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
             {{650, 655, 30, 30}, STORAGE_MINUS}
         },
     },
-    {"Nuclear Power Plant", NUCLEAR, 500.0, 186.6,186.6, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
+    {"Nuclear Power Plant", NUCLEAR, 200.0, 120.0,120.0, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
         {
             {{0, 0, 0, 0}, POWER_PLUS},
             {{0, 0, 0, 0}, POWER_MINUS},
