@@ -107,7 +107,7 @@ void display_datas(SDL_Renderer* renderer);
 void destroyImages();
 void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height);
 void draw_button(SDL_Renderer* renderer, BUTTON button);
-void draw_demand(SDL_Renderer* renderer);
+void draw_demand_production(SDL_Renderer* renderer);
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color,
     SDL_Rect position);
 bool isRectClicked(int x, int y, SDL_Rect button);

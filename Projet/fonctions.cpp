@@ -11,7 +11,6 @@ const char* imageList[] = {
 };
 
 
-
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[], SDL_Renderer* renderer) {
 	if (buttontype == POWER_PLUS && plant->currentProduction < plant->maximumProduction) {
 		if (plant->type == FOSSIL || plant->type == HYDRO) {
@@ -349,8 +348,8 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
 	}
 }
-void draw_demand(SDL_Renderer* renderer) {
-	float ratio = totalDemand / 315;
+void draw_demand_production(SDL_Renderer* renderer) {
+	float ratio = totalDemand / 700.0;
 	if (ratio >= 0.8) {
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
 	}
@@ -366,11 +365,53 @@ void draw_demand(SDL_Renderer* renderer) {
 	else {
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
 	}
-	drawRectangle(renderer, 10, 10, ratio * 400, 50);
+	drawRectangle(renderer, 10, 10, ratio * 400, 25);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_Rect border = { 10, 10, 400, 50 };
+	SDL_Rect border = { 10, 10, 400, 25 };
 	SDL_RenderDrawRect(renderer, &border);
+
+	// Ajouter le texte "demande"
+	char demandText[50];
+	snprintf(demandText, sizeof(demandText), "Demand %.2f MW", totalDemand);
+	SDL_Surface* surfaceDemand = TTF_RenderText_Solid(font2, demandText, black);
+	SDL_Texture* textureDemand = SDL_CreateTextureFromSurface(renderer, surfaceDemand);
+	SDL_Rect textRectDemand = { 15, 13, surfaceDemand->w, surfaceDemand->h };
+	SDL_RenderCopy(renderer, textureDemand, NULL, &textRectDemand);
+	SDL_FreeSurface(surfaceDemand);
+	SDL_DestroyTexture(textureDemand);
+
+	ratio = totalProduction / 700.0;
+	if (ratio >= 0.8) {
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
+	}
+	else if (ratio >= 0.7) {
+		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Orange
+	}
+	else if (ratio >= 0.6) {
+		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
+	}
+	else if (ratio >= 0.3) {
+		SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255); // Vert jaune
+	}
+	else {
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
+	}
+	drawRectangle(renderer, 10, 40, ratio * 400, 25);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_Rect border2 = { 10, 40, 400, 25 };
+	SDL_RenderDrawRect(renderer, &border2);
+
+	// Ajouter le texte "production"
+	char productionText[50];
+	snprintf(productionText, sizeof(productionText), "Production %.2f MW", totalProduction);
+	SDL_Surface* surfaceProduction = TTF_RenderText_Solid(font2, productionText, black);
+	SDL_Texture* textureProduction = SDL_CreateTextureFromSurface(renderer, surfaceProduction);
+	SDL_Rect textRectProduction = { 15, 43, surfaceProduction->w, surfaceProduction->h };
+	SDL_RenderCopy(renderer, textureProduction, NULL, &textRectProduction);
+	SDL_FreeSurface(surfaceProduction);
+	SDL_DestroyTexture(textureProduction);
 }
+
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 	for (int i = 0; i < 6; i++) {
 		char path[128];
@@ -531,34 +572,26 @@ void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, 
 
 void display_datas(SDL_Renderer* renderer) {
 	// Définir les rectangles pour chaque ligne
-	SDL_Rect rect_data1 = { 50, 75, L_FENETRE, 25 };  // Ligne 1
-	SDL_Rect rect_data2 = { 50, 100, L_FENETRE, 25 }; // Ligne 2
-	SDL_Rect rect_data3 = { 50, 125, L_FENETRE, 25 }; // Ligne 3
-	SDL_Rect rect_data4 = { 50, 150, L_FENETRE, 25 }; // Ligne 4
-	SDL_Rect rect_data5 = { 50, 175, L_FENETRE, 25 }; // Ligne 5
-	SDL_Rect rect_data6 = { 50, 200, L_FENETRE, 25 }; // Ligne 6
+	SDL_Rect rect_data1 = { 62, 90, L_FENETRE, 25 };  // Ligne 1
+	SDL_Rect rect_data2 = { 62, 145, L_FENETRE, 25 }; // Ligne 4
+	SDL_Rect rect_data3 = { 62, 195, L_FENETRE, 25 }; // Ligne 5
+	SDL_Rect rect_data4 = { 62, 250, L_FENETRE, 25 }; // Ligne 6
 
 	// Texte pour chaque ligne
-	char description1[150], description2[150], description3[150];
-	char description4[150], description5[150], description6[150];
+	char description1[150];
+	char description2[150], description3[150], description4[150];
 
 	// Remplir chaque chaîne avec un seul terme
 	snprintf(description1, sizeof(description1), "Current CO2 emissions : %.2f Kg", generalCO2);
-	snprintf(description2, sizeof(description2), "Current production : %.2f MW", totalProduction);
-
-	snprintf(description3, sizeof(description3), "Current demand : %.2f MW", totalDemand);
+	snprintf(description2, sizeof(description2), "Actual wind : %.2f Km/h", wind);
+	snprintf(description3, sizeof(description3), "Current cost : %.2f euros", cost);
 	snprintf(description4, sizeof(description4), "Current satisfaction : %.2f/10", generalSatisfaction);
-
-	snprintf(description5, sizeof(description5), "Actual wind : %.2f Km/h", wind);
-	snprintf(description6, sizeof(description6), "Current cost : %.2f euros", cost);
 
 	// Afficher chaque ligne de texte séparément
 	render_text(renderer, font2, description1, black, rect_data1); // Ligne 1
-	render_text(renderer, font2, description2, black, rect_data2); // Ligne 2
-	render_text(renderer, font2, description3, black, rect_data3); // Ligne 3
-	render_text(renderer, font2, description4, black, rect_data4); // Ligne 4
-	render_text(renderer, font2, description5, black, rect_data5); // Ligne 5
-	render_text(renderer, font2, description6, black, rect_data6); // Ligne 6
+	render_text(renderer, font2, description2, black, rect_data2); // Ligne 4
+	render_text(renderer, font2, description3, black, rect_data3); // Ligne 5
+	render_text(renderer, font2, description4, black, rect_data4); // Ligne 6
 }
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font* font) {
 	for (int i = 0; i < 6; i++) {

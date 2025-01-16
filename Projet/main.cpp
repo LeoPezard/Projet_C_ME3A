@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
             {{1050, 655, 30, 30}, STORAGE_MINUS}
         },
     },
-    {"Battery Power Plant", BATTERY, 50.0, 5.0,5.0, 6.0, 0.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
+    {"Battery Power Plant", BATTERY, 50.0, 0.0,5.0, 6.0, 0.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
         {
             {{10, 630, 30, 30}, POWER_PLUS},
             {{40, 630, 30, 30}, POWER_MINUS},
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
             draw_sun(rendu, sinusRect, amplitude, hour);
             SDL_RenderCopy(rendu, sun, NULL, &sunRect);
             SDL_RenderCopy(rendu, moon, NULL, &moonRect);
-            draw_demand(rendu);
+            draw_demand_production(rendu);
 
             // Mettre à jour le décalage
             offsetSin += 1;
