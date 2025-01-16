@@ -220,6 +220,9 @@ double current_satisfaction(Energyplant plants[6]) {
 
 	generalSatisfaction = fmax(0.0, fmin(generalSatisfaction, 10.0)); //sinon c'était négatif
 
+	// Convertir en entier (arrondi à l'entier le plus proche)
+	generalSatisfaction = (int)round(generalSatisfaction);
+
 	return generalSatisfaction;
 
 }
@@ -541,9 +544,9 @@ void display_datas(SDL_Renderer* renderer) {
 
 	// Remplir chaque chaîne avec un seul terme
 	snprintf(description1, sizeof(description1), "Current CO2 emissions : %.2f Kg", generalCO2);
-	snprintf(description2, sizeof(description2), "Current production : %.2f MWh", totalProduction);
+	snprintf(description2, sizeof(description2), "Current production : %.2f MW", totalProduction);
 
-	snprintf(description3, sizeof(description3), "Current demand : %.2f MWh", totalDemand);
+	snprintf(description3, sizeof(description3), "Current demand : %.2f MW", totalDemand);
 	snprintf(description4, sizeof(description4), "Current satisfaction : %.2f/10", generalSatisfaction);
 
 	snprintf(description5, sizeof(description5), "Actual wind : %.2f Km/h", wind);
