@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
             update_production_wind(&plants[2], wind);
-            
+             
             SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); // Blanc
             SDL_RenderFillRect(rendu, &sinusRect);
 

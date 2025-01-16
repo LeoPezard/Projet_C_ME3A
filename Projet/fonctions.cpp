@@ -12,11 +12,11 @@ const char* imageList[] = {
 
 
 
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6],char message[], SDL_Renderer* renderer) {
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[], SDL_Renderer* renderer) {
 	if (buttontype == POWER_PLUS && plant->currentProduction < plant->maximumProduction) {
-		if (plant->type == FOSSIL || plant->type == HYDRO ) {
+		if (plant->type == FOSSIL || plant->type == HYDRO) {
 			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-			animateLightning(renderer, plant->x+plant->width/2, plant->y, 600, 300, 100);
+			animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
 		}
 		else if (plant->type == BATTERY) {
 			if (plant->storageRatio >= 5.0) {
@@ -24,21 +24,21 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 				plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
 				animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
 			}
-		}	
+		}
 	}
 	else if (buttontype == POWER_MINUS) {
-		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY ) {
+		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY) {
 			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
 		}
 	}
 	if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
-		if (buttontype == STORAGE_PLUS && plants[5].storageRatio < 100.0 ){
+		if (buttontype == STORAGE_PLUS && plants[5].storageRatio < 100.0) {
 			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
-			animateLightning(renderer, plant->x + plant->width / 2, plant->y+plant->height, 
-				plant->x + plant->width / 2 , plant->y + plant->height +100, 50);
-			animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
-				plants[5].x+plants[5].width/2, plants[5].y+plants[5].height+100, 100);
 			plants[5].storageRatio += (5.0 / 100) * plant->maximumProduction;
+			animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height,
+				plant->x + plant->width / 2, plant->y + plant->height + 100, 50);
+			animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
+				plants[5].x + plants[5].width / 2, plants[5].y + plants[5].height + 100, 100);
 			if (plants[5].storageRatio >= 100.0) {
 				plants[5].storageRatio = 100.0;
 				snprintf(message, sizeof(message), "Stockage maximal atteint");
@@ -49,13 +49,13 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
 			}
 		}
-		}
+	}
 	if (plant->currentProduction > plant->maximumProduction) {
 		plant->currentProduction = plant->maximumProduction;
 	}
 	else if (plant->currentProduction < 0) {
 		plant->currentProduction = 0;
-	} 
+	}
 }
 
 void update_co2(Energyplant plants[6]) {
@@ -198,10 +198,10 @@ double current_satisfaction(Energyplant plants[6]) {
 		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
 		double excessProductionRatio = (totalProduction - totalDemand) / totalDemand;
 		if (excessProductionRatio > 0.5) {
-			generalSatisfaction -= log10(1 + excessProductionRatio) * 10.0; // Pénalité douce pour encourager surprod par sécu
+			generalSatisfaction -= log10(1 + excessProductionRatio) * 20.0; // Pénalité douce pour encourager surprod par sécu
 		}
 		else {
-			generalSatisfaction += excessProductionRatio * 10.0; // Bonus pour une production légèrement excédentaire
+			generalSatisfaction += excessProductionRatio * 20.0; // Bonus pour une production légèrement excédentaire
 		}
 	}
 
@@ -220,6 +220,9 @@ double current_satisfaction(Energyplant plants[6]) {
 
 	generalSatisfaction = fmax(0.0, fmin(generalSatisfaction, 10.0)); //sinon c'était négatif
 
+	// Convertir en entier (arrondi à l'entier le plus proche)
+	generalSatisfaction = (int)round(generalSatisfaction);
+
 	return generalSatisfaction;
 
 }
@@ -235,7 +238,7 @@ void create_wind() { // Elle marche
 
 }
 void create_event(Event events[], int event_count, float* totalDemand, int hour,
-	char message[],char message3[], size_t messageSize) {
+	char message[], char message3[], size_t messageSize) {
 	// Choisir un événement aléatoire
 	int eventIndex = rand() % event_count;
 	chosenEvent = events[eventIndex];
@@ -263,7 +266,7 @@ void draw_events(SDL_Renderer* renderer, Event chosenEvent) {
 	SDL_RenderCopy(renderer, chosenEvent.image, NULL, &destRect);
 }
 void draw_button(SDL_Renderer* renderer, BUTTON button)
-{	
+{
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
 	if (button.type == POWER_PLUS)
 	{
@@ -476,7 +479,7 @@ void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) 
 	SDL_RenderFillRect(renderer, &rect);
 }
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
-	SDL_Rect arrowRect= { 440,10, 50,50 };
+	SDL_Rect arrowRect = { 440,10, 50,50 };
 	SDL_Texture* arrowUp = IMG_LoadTexture(renderer, "./assets/arrowUp.png");
 	SDL_Texture* arrowDown = IMG_LoadTexture(renderer, "./assets/arrowDown.png");
 	if (up) {
@@ -527,28 +530,35 @@ void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, 
 
 
 void display_datas(SDL_Renderer* renderer) {
-	SDL_Rect rect_datas1 = { 50,75 , L_FENETRE, 50 };
-	SDL_Rect rect_datas2 = { 50,110 , L_FENETRE, 50 };
-	SDL_Rect rect_datas3 = { 50,145 , L_FENETRE, 50 };
+	// Définir les rectangles pour chaque ligne
+	SDL_Rect rect_data1 = { 50, 75, L_FENETRE, 25 };  // Ligne 1
+	SDL_Rect rect_data2 = { 50, 100, L_FENETRE, 25 }; // Ligne 2
+	SDL_Rect rect_data3 = { 50, 125, L_FENETRE, 25 }; // Ligne 3
+	SDL_Rect rect_data4 = { 50, 150, L_FENETRE, 25 }; // Ligne 4
+	SDL_Rect rect_data5 = { 50, 175, L_FENETRE, 25 }; // Ligne 5
+	SDL_Rect rect_data6 = { 50, 200, L_FENETRE, 25 }; // Ligne 6
 
-	char description[250], description2[150], description3[150];
-	snprintf(description, sizeof(description),
-		"Current CO2 emissions : %.2f Kg  "
-		"Current production : %2.f MWh",
-		generalCO2, totalProduction);
-	snprintf(description2, sizeof(description2),
-		"Current demand : %.2f MWh  "
-		"Current satisfaction : %2.f/10",
-		totalDemand, generalSatisfaction);
-	snprintf(description3, sizeof(description3),
-		"Actual wind %.2f Km/h  "
-		" Current cost : %2.f euros",
-		wind, cost);
-	render_text(renderer, font2, description, black, rect_datas1);
-	render_text(renderer, font2, description2, black, rect_datas2);
-	render_text(renderer, font2, description3, black, rect_datas3);
-	//render_text(renderer, font2, description, black, rect_datas1);
+	// Texte pour chaque ligne
+	char description1[150], description2[150], description3[150];
+	char description4[150], description5[150], description6[150];
 
+	// Remplir chaque chaîne avec un seul terme
+	snprintf(description1, sizeof(description1), "Current CO2 emissions : %.2f Kg", generalCO2);
+	snprintf(description2, sizeof(description2), "Current production : %.2f MW", totalProduction);
+
+	snprintf(description3, sizeof(description3), "Current demand : %.2f MW", totalDemand);
+	snprintf(description4, sizeof(description4), "Current satisfaction : %.2f/10", generalSatisfaction);
+
+	snprintf(description5, sizeof(description5), "Actual wind : %.2f Km/h", wind);
+	snprintf(description6, sizeof(description6), "Current cost : %.2f euros", cost);
+
+	// Afficher chaque ligne de texte séparément
+	render_text(renderer, font2, description1, black, rect_data1); // Ligne 1
+	render_text(renderer, font2, description2, black, rect_data2); // Ligne 2
+	render_text(renderer, font2, description3, black, rect_data3); // Ligne 3
+	render_text(renderer, font2, description4, black, rect_data4); // Ligne 4
+	render_text(renderer, font2, description5, black, rect_data5); // Ligne 5
+	render_text(renderer, font2, description6, black, rect_data6); // Ligne 6
 }
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plants[6], TTF_Font* font) {
 	for (int i = 0; i < 6; i++) {
