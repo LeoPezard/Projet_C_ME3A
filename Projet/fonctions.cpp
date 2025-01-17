@@ -44,7 +44,7 @@ SDL_Color getColorFromRatio(float ratio) {
 }
 
 
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[], SDL_Renderer* renderer) {
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], SDL_Renderer* renderer) {
 	switch (buttontype) {
 	case POWER_PLUS:
 		if (plant->currentProduction < plant->maximumProduction) {
@@ -82,7 +82,6 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 
 				if (plants[5].storageRatio >= 100.0) {
 					plants[5].storageRatio = 100.0;
-					snprintf(message, sizeof(message), "Stockage maximal atteint");
 				}
 			}
 		}
@@ -115,7 +114,14 @@ void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPla
 	solarPlant->currentProduction = 50.0f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
 	windPlant->currentProduction = 60.0f * (wind / 100);
 }
-
+void update_battery(Energyplant* plant) {
+	if (plant->currentProduction != 0.0) { // Si la batterie produit de l'énergie
+		plant->storageRatio = fmax(0.0, fmin(plant->storageRatio - 3.0, 100.0)); // Limite entre 0 et 100% de batterie
+	}
+	if (plant->storageRatio == 0.0) {
+		plant->currentProduction = 0.0;
+	}
+}
 
 float demand_at(int hour) {
 	static const struct {

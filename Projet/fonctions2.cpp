@@ -86,7 +86,7 @@ void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],boo
 						else if (plants[i].buttons[j].type == STORAGE_MINUS) {
 							snprintf(message, messageSize, "Reduction du stockage");
 						}
-						update_production(&plants[i], plants[i].buttons[j].type, plants, message, renderer);
+						update_production(&plants[i], plants[i].buttons[j].type, plants, renderer);
 						return; // Sortir de la fonction après avoir traité le clic sur un bouton
 					}
 				}

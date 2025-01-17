@@ -181,8 +181,8 @@ int main(int argc, char* argv[])
     bool clicked[6] = { false, false, false, false, false, false };
     int offsetSin = 0;
 
-    int lastWindUpdateTime = 0;  // Temps de la dernière mise à jour du vent
-    int windUpdateInterval = 2000; // Intervalle pour modifier le vent
+    int lastWindUpdateTime = 0, lastBatteryInterval=0;  // Temps de la dernière mise à jour du vent
+    int windUpdateInterval = 2000, batteryInterval = 3000; // Intervalle pour modifier le vent
 
     int amplitude = sinusRect.h / 2 - 10;
 
@@ -271,6 +271,7 @@ int main(int argc, char* argv[])
             // Effacer le message d'information au bout de 2heures
             if (hour - heuremessage == 2) {
                 snprintf(message4, sizeof(message4), "");
+                
             }
 
             // affichage du message
@@ -287,6 +288,10 @@ int main(int argc, char* argv[])
             if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) {
                 create_wind();  // Créer un nouveau vent
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
+            }
+            if (SDL_GetTicks() - lastBatteryInterval >= batteryInterval) {
+                update_battery(&plants[5]);  // Changer la batterie
+                lastBatteryInterval = SDL_GetTicks();
             }
             // Modifie tous les paramètres 
             update_current_params(plants, &plants[1], &plants[2]);

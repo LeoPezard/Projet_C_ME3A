@@ -103,7 +103,7 @@ void create_event( Event events[], int event_count, float* totalDemand, int hour
 
 
 void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant, int currentHour);
-
+void update_battery(Energyplant* plant);
 void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energyplant* windPlant);
 double current_cost(Energyplant plants[6]);
 void update_co2_and_cost(Energyplant plants[6]);
@@ -122,7 +122,7 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 void handleKeyDown(SDL_Event& event, int continuer);
 int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** texture);
 // !!!!!! Une seule plant en paramètre
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[], SDL_Renderer* renderer);
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], SDL_Renderer* renderer);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
 
