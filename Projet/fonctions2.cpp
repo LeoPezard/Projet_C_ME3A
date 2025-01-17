@@ -40,7 +40,7 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 					if (realTime > 300) {
 						realTime -= 300;
 						if (realTime < 300) {
-							realTime = 300;
+							realTime = 100;
 						}
 					}
 					snprintf(message, messageSize, "Faster");

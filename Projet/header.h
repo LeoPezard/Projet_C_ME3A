@@ -88,26 +88,29 @@ float demand_at(int hour);
 float current_demand(int hour);
 float future_demand(int hour, int delta);
 
-void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand);
+void drawGauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor);
+void draw_border(SDL_Renderer* renderer, int x, int y, int w, int h);
+void draw_button(SDL_Renderer* renderer, BUTTON button);
+void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float futureDemand);
+void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
+void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
+void draw_events(SDL_Renderer* renderer, Event chosenEvent);
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up);
+
 void create_wind();
-void create_event(Event events[], int event_count, float* totalDemand, int hour,
+void create_event( Event events[], int event_count, float* totalDemand, int hour,
     char message[], char message3[], size_t messageSize);
 
-void draw_events(SDL_Renderer* renderer, Event chosenEvent);
-void update_production_sun(Energyplant* plant, int currentHour);
-void update_production_wind(Energyplant* plant, int currentWind);
 
+void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant, int currentHour);
 
+void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energyplant* windPlant);
 double current_cost(Energyplant plants[6]);
-void update_cost(Energyplant plants[6]);
-void update_co2(Energyplant plants[6]);
+void update_co2_and_cost(Energyplant plants[6]);
 void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
 void display_datas(SDL_Renderer* renderer);
 void destroyImages();
-void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height);
-void draw_button(SDL_Renderer* renderer, BUTTON button);
-void draw_demand_production(SDL_Renderer* renderer);
+
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color,
     SDL_Rect position);
 bool isRectClicked(int x, int y, SDL_Rect button);
@@ -117,9 +120,7 @@ void clickImageButtons(SDL_Renderer* renderer, SDL_Event event, Image images[], 
 void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[4],
     char message[], size_t messageSize, SDL_Color& white);
 void handleKeyDown(SDL_Event& event, int continuer);
-void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
-void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
-
+int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** texture);
 // !!!!!! Une seule plant en paramètre
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[], SDL_Renderer* renderer);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);

@@ -30,18 +30,16 @@ int main(int argc, char* argv[])
     SDL_Window* fenetrePrincipale = NULL;
     SDL_Renderer* rendu = NULL;
     SDL_Texture* texture_fond = NULL;
-    SDL_Texture* tv = NULL;
     SDL_Texture* sun = NULL;
     SDL_Texture* moon = NULL;
 
 
     SDL_Rect destination = { 0,0,L_FENETRE,H_FENETRE };
-    SDL_Rect tvRect = { 850,-25,350,250 };
     SDL_Rect sinusRect = { 900, 225, 250, 150 };
     SDL_Rect HourRect = { 795,10 };
     SDL_Rect info1 = { 945, 30 };
-    SDL_Rect info2 = { 930, 50 };
-    SDL_Rect info3 = { 930, 70 };
+    SDL_Rect info2 = { 945, 50 };
+    SDL_Rect info3 = { 950, 185 };
     SDL_Rect info4 = { 50, 280 };
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
@@ -120,7 +118,7 @@ int main(int argc, char* argv[])
     font3 = TTF_OpenFont("arial.ttf", 15);
     // 1) Creation de la fenetre
     //-------------------------
-    fenetrePrincipale = SDL_CreateWindow("superProjet", // titre
+    fenetrePrincipale = SDL_CreateWindow("Projet Morin-Pezard", // titre
         SDL_WINDOWPOS_UNDEFINED,    // position initiale en X
         SDL_WINDOWPOS_UNDEFINED,    // position initiale en Y
         L_FENETRE,                  // Largeur en pixel
@@ -152,21 +150,31 @@ int main(int argc, char* argv[])
     };
     // 2) Test de la librairie Image
     //-----------------------------
-    texture_fond = IMG_LoadTexture(rendu, "./assets/provence.png");
-    tv = IMG_LoadTexture(rendu, "./assets/tv.png");
+    texture_fond = IMG_LoadTexture(rendu, "./assets/background4.png");
     sun = IMG_LoadTexture(rendu, "./assets/sun2.png");
     moon = IMG_LoadTexture(rendu, "./assets/moon.png");
+    if (texture_fond == NULL || sun == NULL || moon == NULL) {
+        printf("Erreur de chargement de l'image %s: \n", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < 6; i++) {
+        char path[128];
+        snprintf(path, sizeof(path), "./assets/%s", imageList[i]);
+        if (load_image(rendu, path, &images[i].texture) != 0) {
+            exit(EXIT_FAILURE); // Erreur de chargement
+        }
+    }
     draw_energy_plant_widget(rendu, plants);
     // 3) creation des variables
 
     // Initialisation des champs des boutons
-    BUTTON button1 = { {955, 190, 75, 25}, FASTER };
-    BUTTON button2 = { {1030, 190, 75, 25}, SLOWER };
+    BUTTON button1 = { {952, 203, 75, 20}, FASTER };
+    BUTTON button2 = { {1032, 203, 75, 20}, SLOWER };
     BUTTON buttonQuit = { {L_FENETRE / 2, H_FENETRE - 30, 70, 30}, QUIT };
     BUTTON appButtons[4] = { button1, button2, buttonQuit, 0 };
     
 
-    char message1[256], message2[35], message3[256], message4[256];
+    char message1[256], message2[35], message3[256], message4[256],hour_text[256];
     snprintf(message1, sizeof(message1), "Event of the day :");
     snprintf(message4, sizeof(message4), "");
 
@@ -230,35 +238,36 @@ int main(int argc, char* argv[])
                 SDL_Delay(intervalle - (temps - tempsPrecedent));
             }
 
-
-            // Mise à jour de l'affichage avec les fonctions liées au rendu à mettre ici
-            // début de la zone d'affichage
             SDL_RenderClear(rendu);
-
-
+            // Affichage de l'image de fond et de la 
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
-            SDL_RenderCopy(rendu, tv, NULL, &tvRect);
-
-            draw_energy_plant_production(rendu, plants);
-            legend_plant_production(rendu, plants, font2);
+            // Dessin des centrales énergétiques 
+            //draw_energy_plant_widget(rendu, plants);
             for (int i = 0; i < 6; i++) {
                 SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
             }
-            
+
+            // Leur production et leurs légendes
+            draw_energy_plant_production(rendu, plants);
+            legend_plant_production(rendu, plants, font2);
+            // Dessin des boutons si une centrale est cliquée
             for (int i = 0; i < 6; i++) {
                 if (clicked[i]) {
                     for (int j = 0; j < 4; j++) {
-                        // Vérifie si le bouton est valide (ex. dimensions non nulles) pour ne pas écrire les '+' et '-' dans le vide
+                        // Vérifie si le bouton est valide (ex dimensions non nulles) pour ne pas écrire les '+' et '-' dans le vide
+                        // Si le bouton n'est pas valide (volontairement) on ne dessine pas 
+                        // Exemple bouton d'augmentation manuelle de production du solaire
                         if (plants[i].buttons[j].rect.w > 0 && plants[i].buttons[j].rect.h > 0) {
                             draw_button(rendu, plants[i].buttons[j]);
                         }
                     }
                 }
             }
-            
+            // Boutons de l'application
             draw_button(rendu, button1);
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
+
             // Effacer le message d'information au bout de 2heures
             if (hour - heuremessage == 2) {
                 snprintf(message4, sizeof(message4), "");
@@ -268,27 +277,24 @@ int main(int argc, char* argv[])
             draw_events(rendu, chosenEvent);
             render_text(rendu, font2, message1, black, info1);
             render_text(rendu, font2, message2, black, info2);
-            render_text(rendu, font3, message3, black, info3);
+            render_text(rendu, font3, message3, white, info3);
             render_text(rendu, font1, message4, black, info4);
-            char hour_text[256];
-
-            snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
             render_text(rendu, font1, hour_text, black, HourRect);
-            current_production(plants);
-            current_satisfaction(plants);
-            update_co2(plants);
-            current_CO2(plants);
-            current_demand(hour);
-            draw_demand_indicator(rendu, totalDemand, future_demand(hour, 2));
-            update_cost(plants);
-            current_cost(plants);
-            update_production_sun(&plants[1], hour);
+            
+            snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
+            
+            
             if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) {
                 create_wind();  // Créer un nouveau vent
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
-            update_production_wind(&plants[2], wind);
-             
+            // Modifie tous les paramètres 
+            update_current_params(plants, &plants[1], &plants[2]);
+            // Affichage de la demande et de la production dans des jauges en haut à gauche de la fenêtre
+            draw_demand_production(rendu, totalDemand, future_demand(hour, 2));
+            // Affiche les données (en texte) sur la fenêtre
+            display_datas(rendu);
+
             SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); // Blanc
             SDL_RenderFillRect(rendu, &sinusRect);
 
@@ -296,13 +302,9 @@ int main(int argc, char* argv[])
             draw_sun(rendu, sinusRect, amplitude, hour);
             SDL_RenderCopy(rendu, sun, NULL, &sunRect);
             SDL_RenderCopy(rendu, moon, NULL, &moonRect);
-            draw_demand_production(rendu);
-
+            
             // Mettre à jour le décalage
             offsetSin += 1;
-            display_datas(rendu);
-
-
             SDL_RenderPresent(rendu); // fin de la zone d'affichage
             SDL_Delay(16);
         }

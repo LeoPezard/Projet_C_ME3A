@@ -9,149 +9,162 @@ const char* imageList[] = {
 	"batterie.png",
 	"charbon.png",
 };
+const struct {
+	enum EnergyType type;
+	double co2_factor;
+	double cost_factor;
+} PLANT_FACTORS[] = {
+	{FOSSIL, 418.0, 40.0},
+	{SOLAR, 43.9, 75.0},
+	{WIND, 14.1, 60.0},
+	{HYDRO, 6.0, 20.0},
+	{NUCLEAR, 10.0, 70.0},
+	{BATTERY, 0.0, 150.0}
+};
+SDL_Color getColorFromRatio(float ratio) {
+	SDL_Color color;
+
+	if (ratio >= 0.8) {
+		color.r = 255; color.g = 0; color.b = 0; color.a = 255; // Rouge
+	}
+	else if (ratio >= 0.7) {
+		color.r = 255; color.g = 165; color.b = 0; color.a = 255; // Orange
+	}
+	else if (ratio >= 0.6) {
+		color.r = 255; color.g = 255; color.b = 0; color.a = 255; // Jaune
+	}
+	else if (ratio >= 0.3) {
+		color.r = 173; color.g = 255; color.b = 47; color.a = 255; // Vert jaune
+	}
+	else {
+		color.r = 0; color.g = 255; color.b = 0; color.a = 255; // Vert
+	}
+
+	return color;
+}
 
 
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], char message[], SDL_Renderer* renderer) {
-	if (buttontype == POWER_PLUS && plant->currentProduction < plant->maximumProduction) {
-		if (plant->type == FOSSIL || plant->type == HYDRO) {
-			plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-			animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
-		}
-		else if (plant->type == BATTERY) {
-			if (plant->storageRatio >= 5.0) {
+	switch (buttontype) {
+	case POWER_PLUS:
+		if (plant->currentProduction < plant->maximumProduction) {
+			switch (plant->type) {
+			case FOSSIL:
+			case HYDRO:
 				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-				plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
 				animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
+				break;
+			case BATTERY:
+				if (plant->storageRatio >= 5.0) {
+					plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
+					plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
+					animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
+				}
+				break;
 			}
 		}
-	}
-	else if (buttontype == POWER_MINUS) {
-		if (plant->type == FOSSIL || plant->type == HYDRO || plant->type == BATTERY) {
-			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
-		}
-	}
-	if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
-		if (buttontype == STORAGE_PLUS && plants[5].storageRatio < 100.0) {
-			plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
-			plants[5].storageRatio += (5.0 / 100) * plant->maximumProduction;
-			animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height,
-				plant->x + plant->width / 2, plant->y + plant->height + 100, 50);
-			animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
-				plants[5].x + plants[5].width / 2, plants[5].y + plants[5].height + 100, 100);
-			if (plants[5].storageRatio >= 100.0) {
-				plants[5].storageRatio = 100.0;
-				snprintf(message, sizeof(message), "Stockage maximal atteint");
+		break;
+
+	case POWER_MINUS:
+		plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
+		break;
+
+	case STORAGE_PLUS:
+		if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
+			if (plants[5].storageRatio < 100.0) {
+				plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
+				plants[5].storageRatio += (5.0 / 100) * plant->maximumProduction;
+
+				animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height,
+					plant->x + plant->width / 2, plant->y + plant->height + 100, 50);
+				animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
+					plants[5].x + plants[5].width / 2, plants[5].y + plants[5].height + 100, 100);
+
+				if (plants[5].storageRatio >= 100.0) {
+					plants[5].storageRatio = 100.0;
+					snprintf(message, sizeof(message), "Stockage maximal atteint");
+				}
 			}
 		}
-		else if (buttontype == STORAGE_MINUS) {
+		break;
+
+	case STORAGE_MINUS:
+		if (plant->currentProduction >= (5.0 / 100) * plant->maximumProduction) {
 			if (plant->currentProduction < plant->initialProduction) {
 				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
 			}
 		}
+		break;
 	}
-	if (plant->currentProduction > plant->maximumProduction) {
-		plant->currentProduction = plant->maximumProduction;
-	}
-	else if (plant->currentProduction < 0) {
-		plant->currentProduction = 0;
-	}
+	// Vérifications finales des limites
+	plant->currentProduction = fmax(0.0, fmin(plant->currentProduction, plant->maximumProduction));
 }
 
-void update_co2(Energyplant plants[6]) {
-	for (int i = 0; i < 5;i++) {
-		if (plants[i].type == FOSSIL) {
-			plants[i].co2 = 418 * plants[i].currentProduction; // 0.418 kg/kwh
-		}
-		else if (plants[i].type == SOLAR) {
-			plants[i].co2 = 43.9 * plants[i].currentProduction; // 0.0439 kg/kwh
-		}
-		else if (plants[i].type == WIND) {
-			plants[i].co2 = 14.1 * plants[i].currentProduction; // 0.0141 kg/kwh
-		}
-		else if (plants[i].type == HYDRO) {
-			plants[i].co2 = 6 * plants[i].currentProduction; // 0.006 kg/kwh
-		}
-		else if (plants[i].type == NUCLEAR) {
-			plants[i].co2 = 10 * plants[i].currentProduction; // 0.01 kg/kwh
-		}
-	}
-}
-void update_cost(Energyplant plants[6]) {
+void update_co2_and_cost(Energyplant plants[6]) {
 	for (int i = 0; i < 6; i++) {
-		if (plants[i].type == FOSSIL) {
-			plants[i].cost = plants[i].currentProduction * 40;
-		}
-		else if (plants[i].type == SOLAR) {
-			plants[i].cost = plants[i].currentProduction * 75;
-		}
-		else if (plants[i].type == WIND) {
-			plants[i].cost = plants[i].currentProduction * 60;
-		}
-		else if (plants[i].type == NUCLEAR) {
-			plants[i].cost = plants[i].currentProduction * 70;
-		}
-		else if (plants[i].type == HYDRO) {
-			plants[i].cost = plants[i].currentProduction * 20;
-		}
-		else if (plants[i].type == BATTERY) {
-			plants[i].cost = plants[i].currentProduction * 150;
+		for (const auto& factor : PLANT_FACTORS) {
+			if (plants[i].type == factor.type) {
+				plants[i].co2 = factor.co2_factor * plants[i].currentProduction;
+				plants[i].cost = factor.cost_factor * plants[i].currentProduction;
+				break;
+			}
 		}
 	}
 }
-void update_production_sun(Energyplant* plant, int currentHour) { // Elle marche
-	plant->currentProduction = 50.0f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
-
-}
-void update_production_wind(Energyplant* plant, int currentWind) { // Elle marche
-	plant->currentProduction = 60.0f * (wind / 100);
+void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant,  int currentHour) { // Elle marche
+	solarPlant->currentProduction = 50.0f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
+	windPlant->currentProduction = 60.0f * (wind / 100);
 }
 
-double current_cost(Energyplant plants[6]) {
-	cost = 0;
-	for (int i = 0; i < 6; i++) {
-		cost += plants[i].cost;
-	}
-	return cost;
-}
 
-float demand_at(int hour) { // en MW (données de la France) correspond à la demande à une certaine 
-	//heure pour pouvoir l'utiliser dans la prévision
-	float demande = 0.0; // Pas totalDemand car modifie pour les utilisations des autres fct de demande 
-	if (hour > 4 && hour <= 12) { // Augmentation progressive entre 4h et midi
-		demande = 50000.0 + (hour - 4) * 3125; // Augmentation linéaire (3125 MW par heure)
-	}
-	else if (hour > 12 && hour <= 16) { // Plateau dans la journée
-		demande = 75000.0; // Stabilisation autour de 75 000 MW
-	}
-	else if (hour > 16 && hour <= 20) { // Pic en soirée
-		demande = 75000.0 + (hour - 16) * 2500; // Augmente de 2500 MW par heure jusqu'à 20h
-	}
-	else if (hour > 20 && hour <= 23) { // Diminution après le pic
-		demande = 85000.0 - (hour - 20) * 3000; // Réduction de 3000 MW par heure
-	}
-	else if (hour > 23 || hour <= 4) { // Stabilisation pendant la nuit
-		demande = 60000.0; // Retour à une demande modérée pendant la nuit
+float demand_at(int hour) {
+	static const struct {
+		int start_hour;
+		int end_hour;
+		float base_demand;
+		float rate;
+	} DEMAND_PERIODS[] = {
+		{4, 12, 50000.0, 3125.0},   // Morning rise
+		{12, 16, 75000.0, 0.0},     // Day plateau
+		{16, 20, 75000.0, 2500.0},  // Evening peak
+		{20, 23, 85000.0, -3000.0}, // Evening decline
+		{23, 4, 60000.0, 0.0}       // Night stable
+	};
+
+	hour = hour % 24;
+	float demande = 60000.0; // Default night value
+
+	for (const auto& period : DEMAND_PERIODS) {
+		if (hour > period.start_hour && hour <= period.end_hour) {
+			demande = period.base_demand + (hour - period.start_hour) * period.rate;
+			break;
+		}
 	}
 
-	// Conversion pour les données PACA, puis en MWh
-	demande = (demande / 11.4) / 24.0;
-	return demande;
-}
-float current_demand(int hour) {
-	totalDemand = demand_at(hour); // demande actuelle
-	return totalDemand;
+	return (demande / 11.4) / 24.0;
 }
 float future_demand(int hour, int delta) {
 	int futureHour = (hour + delta) % 24; // assure que l'heure reste entre 0 et 23
 	return demand_at(futureHour); // demande future
 }
 
+float current_demand(int hour) {
+	totalDemand = demand_at(hour); // demande actuelle
+	return totalDemand;
+}
 double current_CO2(Energyplant plants[6]) {
 	generalCO2 = 0;
 	for (int i = 0; i < 6; i++) {
 		generalCO2 += plants[i].co2;
 	}
 	return generalCO2;
+}
+double current_cost(Energyplant plants[6]) {
+	cost = 0;
+	for (int i = 0; i < 6; i++) {
+		cost += plants[i].cost;
+	}
+	return cost;
 }
 float current_production(Energyplant plants[6]) {
 	totalProduction = 0.0;
@@ -204,26 +217,25 @@ double current_satisfaction(Energyplant plants[6]) {
 		}
 	}
 
-	// Ajustement basé sur le ratio renouvelable/non-renouvelable
-	//double totalRenewableRatio = renewableProduction / totalProduction;
-	//if (totalRenewableRatio > 0.3) {
-	//generalSatisfaction += totalRenewableRatio * 10.0; // Bonus pour un ratio élevé de renouvelables
-	//}
-	//else {
-	//generalSatisfaction -= (1.0 - totalRenewableRatio) * 10.0; // Pénalité pour un ratio faible de renouvelables
-	//}
-
+	
 	// S'assurer que la satisfaction reste dans les limites [0, 10]
-	if (generalSatisfaction > 10.0) generalSatisfaction = 10.0;
-	//if (generalSatisfaction < 0.0) generalSatisfaction = 0.0;
-
-	generalSatisfaction = fmax(0.0, fmin(generalSatisfaction, 10.0)); //sinon c'était négatif
-
-	// Convertir en entier (arrondi à l'entier le plus proche)
-	generalSatisfaction = (int)round(generalSatisfaction);
+	// Puis conversion en int
+	generalSatisfaction = (int)round(fmax(0.0, fmin(generalSatisfaction, 10.0))); //sinon c'était négatif
 
 	return generalSatisfaction;
 
+}
+
+
+void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energyplant* windPlant) {
+	update_co2_and_cost(plants); // modifie le co2 et cout de chaque centrale
+	update_production_sun_and_wind(solarPlant, windPlant, hour);
+	current_cost(plants); // calcule le cout total 
+	current_CO2(plants); // calcule le co2 total
+	current_demand(hour); // renvoie la demande à l'heure actuelle
+	current_production(plants); // Renvoie la production totale (somme des centrales)
+	current_satisfaction(plants); // Calcule la satisfaction avec des facteurs selon le type d'énergie
+	// Pas le vent car on le crée à des intervalles réguliers + longs
 }
 
 void create_wind() { // Elle marche
@@ -254,59 +266,62 @@ void create_event(Event events[], int event_count, float* totalDemand, int hour,
 	}snprintf(message, messageSize, "%s", chosenEvent.name);
 	const char* typeText = (chosenEvent.type == INCREASE) ? "Increase" : "Decrease";
 	snprintf(message3, messageSize, "%s from %d to %d", typeText, chosenEvent.startHour, chosenEvent.endHour);
+	
 }
 
 void draw_events(SDL_Renderer* renderer, Event chosenEvent) {
-	SDL_Rect destRect = { 915, 22, 230, 150 }; // Position et taille de l'image
+	SDL_Rect destRect = { 920, 25, 230, 160 }; // Position et taille de l'image
 	if (chosenEvent.image == NULL) {
 		printf("Erreur de chargement de l'image \n");
 		exit(EXIT_FAILURE);
 	}
 	SDL_RenderCopy(renderer, chosenEvent.image, NULL, &destRect);
 }
-void draw_button(SDL_Renderer* renderer, BUTTON button)
-{
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-	if (button.type == POWER_PLUS)
-	{
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	}
-	else if (button.type == POWER_MINUS)
-	{
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	}
-	else if (button.type == QUIT)
-	{
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	}
-	else if (button.type == FASTER)
-	{
-		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
-	}
-	else if (button.type == SLOWER)
-	{
-		SDL_SetRenderDrawColor(renderer, 173, 216, 230, 255);
-	}
-	SDL_RenderFillRect(renderer, &button.rect);
+void draw_button(SDL_Renderer* renderer, BUTTON button) {
+	// Définir les couleurs en fonction du type de bouton
+	SDL_Color buttonColor = { 100, 100, 100, 255 }; // Couleur par défaut
 
-	//affiche le text du bouton en fonction du type de bouton
-	const char* label = "";
-	switch (button.type)
-	{
-	case POWER_PLUS: label = "+"; break;
-	case POWER_MINUS: label = "-"; break;
-	case STORAGE_PLUS: label = "+"; break;
-	case STORAGE_MINUS: label = "-"; break;
-	case QUIT: label = "QUIT"; break;
-	case FASTER: label = "Faster"; break;
-	case SLOWER: label = "Slower"; break;
+	switch (button.type) {
+	case POWER_PLUS: buttonColor.r = 255; buttonColor.g = 0; buttonColor.b = 0; buttonColor.a = 255; // Rouge
+		break;
+	case POWER_MINUS: buttonColor.r = 0; buttonColor.g = 255; buttonColor.b = 0; buttonColor.a = 255; // Vert
+		break;
+	case QUIT: buttonColor.r = 255; buttonColor.g = 0; buttonColor.b = 0; buttonColor.a = 255; // Rouge
+		break;
+	case FASTER: buttonColor.r = 255; buttonColor.g = 165; buttonColor.b = 0; buttonColor.a = 255; // Orange
+		break;
+	case SLOWER: buttonColor.r = 173; buttonColor.g = 216; buttonColor.b = 230; buttonColor.a = 255; // Bleu clair
+		break;
+	default:
+		break;
 	}
-	SDL_Color black = { 0, 0, 0, 255 };
+
+	// Dessiner le rectangle du bouton
+	SDL_SetRenderDrawColor(renderer, buttonColor.r, buttonColor.g, buttonColor.b, buttonColor.a);
+	SDL_RenderFillRect(renderer, &button.rect);
+	draw_border(renderer, button.rect.x, button.rect.y, button.rect.w, button.rect.h);
+
+	// Définir le texte du bouton
+	const char* label = "";
+	switch (button.type) {
+	case POWER_PLUS:
+	case STORAGE_PLUS:  label = "+"; break;
+	case POWER_MINUS:
+	case STORAGE_MINUS: label = "-"; break;
+	case QUIT:          label = "QUIT"; break;
+	case FASTER:        label = "Faster"; break;
+	case SLOWER:        label = "Slower"; break;
+	default: break;
+	}
+
+	// Afficher le texte au centre du bouton
 	SDL_Rect textRect;
-	textRect.x = button.rect.x + button.rect.w / 2 - 4; textRect.y = button.rect.y + button.rect.h / 2 - 12;
-	textRect.w = 0; textRect.h = 0;
-	if (label == "QUIT" || label == "Faster" || label == "Slower") {
-		textRect.x = button.rect.x + 10; textRect.y = button.rect.y;
+	textRect.x = button.rect.x + button.rect.w / 2 - 4;  // Centrage horizontal
+	textRect.y = button.rect.y + button.rect.h / 2 - 12;  // Centrage vertical
+	// Ajuster la position pour les textes longs
+	if (button.type == QUIT || button.type == FASTER || button.type == SLOWER) {
+		textRect.x = button.rect.x + 13;
+		textRect.y = button.rect.y + (button.rect.h / 2 -12);
 	}
 	render_text(renderer, font2, label, black, textRect);
 }
@@ -324,20 +339,11 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 	}
 
 	// Dessiner les bordures du rectangle
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Noir
 	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2); // Ligne des abscisses
-	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
-		sinusRect.x + sinusRect.w, sinusRect.y); // Bordure supérieure
-	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y,
-		sinusRect.x, sinusRect.y + sinusRect.h); // Bordure gauche
-	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure inférieure
-	SDL_RenderDrawLine(renderer, sinusRect.x + sinusRect.w, sinusRect.y,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h); // Bordure droite
-
+		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2); // Axe des abscisses
+	draw_border(renderer, sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h/2); // Bordure du contour
+	
 	// Dessiner la sinusoïde
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Couleur orangée (sinusoïde)
 	double displayPeriod = 12.0; // afficher que les 12 prochaines heures
 	double hoursPerPixel = displayPeriod / sinusRect.w; // Conversion des pixels en heures (par rapport à la période affichée)
 	for (int x = 0; x < sinusRect.w; x++) {
@@ -348,29 +354,32 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
 	}
 }
-void draw_demand_production(SDL_Renderer* renderer) {
-	float ratio = totalDemand / 700.0;
-	if (ratio >= 0.8) {
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
-	}
-	else if (ratio >= 0.7) {
-		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Orange
-	}
-	else if (ratio >= 0.6) {
-		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
-	}
-	else if (ratio >= 0.3) {
-		SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255); // Vert jaune
-	}
-	else {
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
-	}
-	drawRectangle(renderer, 10, 10, ratio * 400, 25);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_Rect border = { 10, 10, 400, 25 };
-	SDL_RenderDrawRect(renderer, &border);
 
-	// Ajouter le texte "demande"
+//Fonction qui dessine un rectangle et change sa couleur selon des paramètres
+// Utilisation dans les fonctions pour tracer la production, la capacité de la batterie et les jauges de 
+// demande et production (en haut à gauche)
+void drawGauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor) {
+	// Dessiner le rectangle intérieur
+	SDL_SetRenderDrawColor(renderer, fillColor.r, fillColor.g, fillColor.b, fillColor.a);
+	SDL_Rect fillRect = { x, y, (int)(width * ratio), height };
+	SDL_RenderFillRect(renderer, &fillRect);	
+}
+void draw_border(SDL_Renderer* renderer, int x, int y, int w, int h) {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_Rect border = { x, y, w, h };
+	SDL_RenderDrawRect(renderer, &border);
+}
+void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
+	draw_arrow(renderer, 450, 30, currentDemand <= futureDemand);
+	float ratioDemand = totalDemand / 700.0f;
+	float ratioProduction = totalProduction / 700.0f;
+
+	// Jauge pour la demande
+	SDL_Color demandColor = getColorFromRatio(ratioDemand);
+	drawGauge(renderer, 10, 10, 400, 25, ratioDemand, demandColor);
+	draw_border(renderer, 10, 10, 400, 25);
+	
+	// Ajouter le texte "Demand"
 	char demandText[50];
 	snprintf(demandText, sizeof(demandText), "Demand %.2f MW", totalDemand);
 	SDL_Surface* surfaceDemand = TTF_RenderText_Solid(font2, demandText, black);
@@ -380,28 +389,12 @@ void draw_demand_production(SDL_Renderer* renderer) {
 	SDL_FreeSurface(surfaceDemand);
 	SDL_DestroyTexture(textureDemand);
 
-	ratio = totalProduction / 700.0;
-	if (ratio >= 0.8) {
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
-	}
-	else if (ratio >= 0.7) {
-		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Orange
-	}
-	else if (ratio >= 0.6) {
-		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
-	}
-	else if (ratio >= 0.3) {
-		SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255); // Vert jaune
-	}
-	else {
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
-	}
-	drawRectangle(renderer, 10, 40, ratio * 400, 25);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_Rect border2 = { 10, 40, 400, 25 };
-	SDL_RenderDrawRect(renderer, &border2);
-
-	// Ajouter le texte "production"
+	// Jauge pour la production
+	SDL_Color productionColor = getColorFromRatio(ratioProduction);
+	drawGauge(renderer, 10, 40, 400, 25, ratioProduction, productionColor);
+	draw_border(renderer, 10, 40, 400, 25);
+	
+	// Ajouter le texte "Production"
 	char productionText[50];
 	snprintf(productionText, sizeof(productionText), "Production %.2f MW", totalProduction);
 	SDL_Surface* surfaceProduction = TTF_RenderText_Solid(font2, productionText, black);
@@ -411,114 +404,53 @@ void draw_demand_production(SDL_Renderer* renderer) {
 	SDL_FreeSurface(surfaceProduction);
 	SDL_DestroyTexture(textureProduction);
 }
+void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]) {
+	for (int i = 0; i < 6; i++) {
+		float productionRatio = plants[i].currentProduction / plants[i].maximumProduction;
+		float batteryRatio = plants[i].storageRatio / 100.0f;
 
+		// Jauge principale
+		SDL_Color productionColor = getColorFromRatio(productionRatio);
+
+		// Calcul de la hauteur ajustée et de l'offset vertical
+		int adjustedHeight = (int)(plants[i].height * productionRatio);
+		int yOffset = plants[i].y +100 + plants[i].height - adjustedHeight; // La jauge commence en bas et remplit vers le haut
+		int xOffset = (plants[i].type == BATTERY) ? 30 : 100;
+
+		// Dessiner la jauge principale (production)
+		drawGauge(renderer, plants[i].x + xOffset, yOffset, 75, adjustedHeight, 1.0f, productionColor);
+		draw_border(renderer, plants[i].x + xOffset,  plants[i].y + 100,  75, plants[i].height);
+		
+		// Si c'est une batterie, ajouter une jauge de capacité
+		if (plants[i].type == BATTERY) {
+			SDL_Color batteryColor = getColorFromRatio(batteryRatio);
+
+			// Calcul de la hauteur ajustée pour la batterie
+			int capacityHeight = (int)(plants[i].height * batteryRatio);
+			int capacityY = plants[i].y + 100 + plants[i].height - capacityHeight; // La jauge de batterie commence aussi en bas
+
+			// Dessiner la jauge de capacité
+			drawGauge(renderer, plants[i].x + 120, capacityY, 30, capacityHeight, 1.0f, batteryColor);
+			draw_border(renderer,plants[i].x + 120,plants[i].y + 100,30,plants[i].height);
+			
+		}
+	}
+}
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 	for (int i = 0; i < 6; i++) {
-		char path[128];
-		snprintf(path, sizeof(path), "./assets/%s", imageList[i]);
-
-		// Charger la texture
-		images[i].texture = IMG_LoadTexture(renderer, path);
-		if (images[i].texture == NULL) {
-			printf("Erreur de chargement de l'image %s: %s\n", path, SDL_GetError());
-			exit(EXIT_FAILURE);
-		}
-
 		// Définir la position et la taille des images
-		images[i].rect.x = plant[i].x;  // Position X
-		images[i].rect.y = plant[i].y;            // Position Y
-		images[i].rect.w = plant[i].width;            // Largeur
-		images[i].rect.h = plant[i].height;            // Hauteur
+		images[i].rect.x = plant[i].x;      // Position X
+		images[i].rect.y = plant[i].y;      // Position Y
+		images[i].rect.w = plant[i].width;  // Largeur
+		images[i].rect.h = plant[i].height; // Hauteur
 
 		// Définir la transparence
 		images[i].alpha = 100;  // Semi-transparent au début
 		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 	}
-
 }
 
-void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]) {
-	for (int i = 0; i < 6; i++) {
-		float ratio = plants[i].currentProduction / plants[i].maximumProduction;
-		float battery = plants[i].storageRatio / 100.0;
 
-		// Définir la couleur en fonction des paliers du ratio
-		if (ratio >= 0.8) {
-			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
-		}
-		else if (ratio >= 0.7) {
-			SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Orange
-		}
-		else if (ratio >= 0.6) {
-			SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
-		}
-		else if (ratio >= 0.3) {
-			SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255); // Vert jaune
-		}
-		else {
-			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
-		}
-
-		// Calcul de la hauteur ajustée et du décalage vertical
-		int adjustedHeight = (int)(plants[i].height * ratio);
-		int yOffset = plants[i].y + 100 + (plants[i].height - adjustedHeight);
-
-		// Définir l'offset horizontal en fonction du type de plante
-		int xOffset = (plants[i].type == BATTERY) ? 30 : 100;
-
-		// Dessiner le rectangle principal
-		drawRectangle(renderer, plants[i].x + xOffset, yOffset, 75, adjustedHeight);
-
-		// Dessiner la bordure autour du rectangle principal
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_Rect border = {
-			plants[i].x + xOffset,  // Position x
-			plants[i].y + 100,      // Position y
-			75,                     // Largeur
-			plants[i].height        // Hauteur totale
-		};
-		SDL_RenderDrawRect(renderer, &border);
-
-		// Si c'est une batterie, dessiner une jauge de capacité à côté
-		if (plants[i].type == BATTERY) {
-			if (battery >= 0.8) {
-				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
-			}
-			else if (battery >= 0.7) {
-				SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Orange
-			}
-			else if (battery >= 0.6) {
-				SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
-			}
-			else if (battery >= 0.3) {
-				SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255); // Vert jaune
-			}
-			else {
-				SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Vert
-			}
-			int capacityHeight = (int)(plants[i].height * battery);
-			int capacityYOffset = plants[i].y + 100 + (plants[i].height - capacityHeight);
-
-			// Dessiner la jauge de capacité
-			drawRectangle(renderer, plants[i].x + 120, capacityYOffset, 30, capacityHeight);
-
-			// Bordure pour la jauge de capacité
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_Rect capacityBorder = {
-				plants[i].x + 120,    // Position x
-				plants[i].y + 100,    // Position y
-				30,                   // Largeur
-				plants[i].height      // Hauteur totale
-			};
-			SDL_RenderDrawRect(renderer, &capacityBorder);
-		}
-	}
-}
-
-void drawRectangle(SDL_Renderer* renderer, int x, int y, int width, int height) {
-	SDL_Rect rect = { x, y, width, height };
-	SDL_RenderFillRect(renderer, &rect);
-}
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
 	SDL_Rect arrowRect = { 440,10, 50,50 };
 	SDL_Texture* arrowUp = IMG_LoadTexture(renderer, "./assets/arrowUp.png");
@@ -530,9 +462,7 @@ void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
 		SDL_RenderCopy(renderer, arrowDown, NULL, &arrowRect);
 	}
 }
-void draw_demand_indicator(SDL_Renderer* renderer, float currentDemand, float futureDemand) {
-	draw_arrow(renderer, 450, 30, currentDemand <= futureDemand);
-}
+
 void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
 	// Calcul de la vitesse en pixels par milliseconde
 	float deltaX = endX - startX;
@@ -557,18 +487,14 @@ void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, 
 			{ (int)(currentX - 10), (int)(currentY + 30) },
 			{ (int)(currentX - 20), (int)(currentY + 40) }
 		};
-
 		// Tracer l'éclair
 		SDL_RenderDrawLines(renderer, lightning, sizeof(lightning) / sizeof(lightning[0]));
 		SDL_RenderPresent(renderer);
-
 		SDL_Delay(16);
-
 		currentX += stepX;
 		currentY += stepY;
 	}
 }
-
 
 void display_datas(SDL_Renderer* renderer) {
 	// Définir les rectangles pour chaque ligne
@@ -630,6 +556,15 @@ void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_C
 	SDL_DestroyTexture(texture);
 }
 
+
+int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** texture) {
+	*texture = IMG_LoadTexture(renderer, imagePath);
+	if (*texture == NULL) {
+		printf("Erreur de chargement de l'image %s: %s\n", imagePath, SDL_GetError());
+		return -1;
+	}
+	return 0;
+}
 void destroyImages() {
 	for (int i = 0; i < 5; i++) {
 		SDL_DestroyTexture(images[i].texture);
