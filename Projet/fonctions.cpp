@@ -243,6 +243,14 @@ void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energ
 	current_satisfaction(plants); // Calcule la satisfaction avec des facteurs selon le type d'énergie
 	// Pas le vent car on le crée à des intervalles réguliers + longs
 }
+void update_background(SDL_Texture* texture_fond, int hour) {
+	if (hour >= 7 && hour < 19) {
+		SDL_SetTextureAlphaMod(texture_fond, 255); // Opacité maximale (jour)
+	}
+	else {
+		SDL_SetTextureAlphaMod(texture_fond, 100); // Opacité réduite (nuit)
+	}
+}
 
 void create_wind() { // Elle marche
 	wind = (double)rand() / RAND_MAX;
@@ -470,6 +478,12 @@ void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
 }
 
 void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
+	// Charger l'image de l'éclair
+	SDL_Texture* lightningTexture = NULL;
+	if (load_image(renderer, "./assets/eclair.png", &lightningTexture) != 0) {
+		return; // Arrêter si le chargement échoue
+	}
+
 	// Calcul de la vitesse en pixels par milliseconde
 	float deltaX = endX - startX;
 	float deltaY = endY - startY;
@@ -481,25 +495,28 @@ void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, 
 	float currentX = startX;
 	float currentY = startY;
 
-	for (int i = 0; i <= steps; ++i) {
-		// Dessiner un éclair sans effacer l'écran
-		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Jaune
+	// Taille du rectangle de rendu
+	int textureWidth = 30, textureHeight = 50;
 
-		// Coordonnées de l'éclair (forme en zigzag)
-		SDL_Point lightning[] = {
-			{ (int)currentX, (int)currentY },
-			{ (int)(currentX - 10), (int)(currentY + 20) },
-			{ (int)(currentX), (int)(currentY + 20) },
-			{ (int)(currentX - 10), (int)(currentY + 30) },
-			{ (int)(currentX - 20), (int)(currentY + 40) }
+	for (int i = 0; i <= steps; ++i) {
+		// Calcul de la position pour l'affichage de l'éclair
+		SDL_Rect destRect = {
+			(int)currentX - textureWidth / 2,  // Centrer l'image horizontalement
+			(int)currentY - textureHeight / 2, // Centrer l'image verticalement
+			textureWidth,
+			textureHeight
 		};
-		// Tracer l'éclair
-		SDL_RenderDrawLines(renderer, lightning, sizeof(lightning) / sizeof(lightning[0]));
+
+		// Afficher la texture
+		SDL_RenderCopy(renderer, lightningTexture, NULL, &destRect);
 		SDL_RenderPresent(renderer);
 		SDL_Delay(16);
 		currentX += stepX;
 		currentY += stepY;
 	}
+
+	// Nettoyer la texture
+	SDL_DestroyTexture(lightningTexture);
 }
 
 void display_datas(SDL_Renderer* renderer) {

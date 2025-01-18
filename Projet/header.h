@@ -104,6 +104,7 @@ void create_event( Event events[], int event_count, float* totalDemand, int hour
 
 void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant, int currentHour);
 void update_battery(Energyplant* plant);
+void update_background(SDL_Texture* texture_fond, int hour);
 void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energyplant* windPlant);
 double current_cost(Energyplant plants[6]);
 void update_co2_and_cost(Energyplant plants[6]);

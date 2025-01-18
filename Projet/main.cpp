@@ -150,8 +150,8 @@ int main(int argc, char* argv[])
     };
     // 2) Test de la librairie Image
     //-----------------------------
-    texture_fond = IMG_LoadTexture(rendu, "./assets/background4.png");
-    sun = IMG_LoadTexture(rendu, "./assets/sun2.png");
+    texture_fond = IMG_LoadTexture(rendu, "./assets/background.png");
+    sun = IMG_LoadTexture(rendu, "./assets/sun.png");
     moon = IMG_LoadTexture(rendu, "./assets/moon.png");
     if (texture_fond == NULL || sun == NULL || moon == NULL) {
         printf("Erreur de chargement de l'image %s: \n", SDL_GetError());
@@ -284,13 +284,15 @@ int main(int argc, char* argv[])
             
             snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
             
+            // Modifie le fond selon l'heure de la journée
+            update_background(texture_fond, hour);
             
             if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) {
                 create_wind();  // Créer un nouveau vent
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
             if (SDL_GetTicks() - lastBatteryInterval >= batteryInterval) {
-                update_battery(&plants[5]);  // Changer la batterie
+                update_battery(&plants[5]);  // Changer la batterie (se décharge)
                 lastBatteryInterval = SDL_GetTicks();
             }
             // Modifie tous les paramètres 
