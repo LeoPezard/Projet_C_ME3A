@@ -23,17 +23,16 @@ bool isRectClicked(int x, int y, SDL_Rect rect) {
 	return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
 }
 
-void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[4],
-	char message[], size_t messageSize, SDL_Color& white) {
+void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[3],
+	char message[], size_t messageSize, SDL_Color& white, int &realTime, int &running) {
 	if (event.button.button == SDL_BUTTON_LEFT) {
 		int x = event.button.x;
 		int y = event.button.y;
 
 		// Vérification des clics sur les boutons de l'app
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 3; i++) {
 			if (isRectClicked(x, y, appButtons[i].rect)) {
 				if (appButtons[i].type == QUIT) {
-					/*snprintf(message, messageSize, "QUIT");*/
 					running = 0;
 				}
 				if (appButtons[i].type == FASTER) {

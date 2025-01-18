@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     SDL_Texture* sun = NULL;
     SDL_Texture* moon = NULL;
 
-
+    // Déclaration des rectangles pour les affichages 
     SDL_Rect destination = { 0,0,L_FENETRE,H_FENETRE };
     SDL_Rect sinusRect = { 900, 225, 250, 150 };
     SDL_Rect HourRect = { 795,10 };
@@ -44,12 +44,30 @@ int main(int argc, char* argv[])
     SDL_Rect sunRect = { 990,230,70,60 };
     SDL_Rect moonRect = { 1000,315,50,50 };
 
-    //SDL_Event evenement;
+    // Initialisation des champs des boutons
+    BUTTON button1 = { {952, 203, 75, 20}, FASTER };
+    BUTTON button2 = { {1032, 203, 75, 20}, SLOWER };
+    BUTTON buttonQuit = { {L_FENETRE / 2, H_FENETRE - 30, 70, 30}, QUIT };
+    BUTTON appButtons[3] = { button1, button2, buttonQuit};
 
+    
 
-    int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1, eventTriggeredToday = 0;
-    // intervalle = durée de temps en ms d'actualisation
+    // Initialisation des messages 
+    char message1[256], message2[35], message3[256], message4[256], hour_text[256];
+    snprintf(message1, sizeof(message1), "Event of the day :");
+    snprintf(message4, sizeof(message4), "");
 
+    // Initialisation de données du jeu (intervalle = durée de temps en ms d'actualisation)
+    int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1, eventTriggeredToday = 0, 
+        offsetSin = 0, minutes = 0;
+
+    int lastWindUpdateTime = 0, lastBatteryInterval = 0;  // Temps de la dernière mise à jour du vent
+    int windUpdateInterval = 2000, batteryInterval = 3000; // Intervalle pour modifier la décharge de batterie
+    int amplitude = sinusRect.h / 2 - 10; // Pour le dessin du sinus (courbe de l'ensoleillement)
+    // Etats des images pour gérer les transparences selon les clics de souris
+    bool clicked[6] = { false, false, false, false, false, false };
+
+    // Création des centrales
     Energyplant plants[6] = {
     {"Gas Power Plant", FOSSIL, 300.0, 28.0,28.0, 4.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
         {
@@ -106,16 +124,19 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Erreur sur initialisation de la SDL (%s)\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
-
+    
     // Initialisation de la TTF
     if (TTF_Init() != 0) {
         fprintf(stdout, "Erreur sur initialisation de la TTF (%s)\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
-
-    font1 = TTF_OpenFont("arial.ttf", 30); // 20 est la taille de la police de caractère
+    // Initialisation des polices utilisées (a mettre après initialisation de la TTF sinon ne marche pas)
+    font1 = TTF_OpenFont("arial.ttf", 30); // 30 est la taille de la police de caractère
     font2 = TTF_OpenFont("arial.ttf", 20);
     font3 = TTF_OpenFont("arial.ttf", 15);
+
+
+    
     // 1) Creation de la fenetre
     //-------------------------
     fenetrePrincipale = SDL_CreateWindow("Projet Morin-Pezard", // titre
@@ -157,6 +178,7 @@ int main(int argc, char* argv[])
         printf("Erreur de chargement de l'image %s: \n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
+    // Vérification du chargement des images avant les modifications des centrales
     for (int i = 0; i < 6; i++) {
         char path[128];
         snprintf(path, sizeof(path), "./assets/%s", imageList[i]);
@@ -167,26 +189,6 @@ int main(int argc, char* argv[])
     draw_energy_plant_widget(rendu, plants);
     // 3) creation des variables
 
-    // Initialisation des champs des boutons
-    BUTTON button1 = { {952, 203, 75, 20}, FASTER };
-    BUTTON button2 = { {1032, 203, 75, 20}, SLOWER };
-    BUTTON buttonQuit = { {L_FENETRE / 2, H_FENETRE - 30, 70, 30}, QUIT };
-    BUTTON appButtons[4] = { button1, button2, buttonQuit, 0 };
-    
-
-    char message1[256], message2[35], message3[256], message4[256],hour_text[256];
-    snprintf(message1, sizeof(message1), "Event of the day :");
-    snprintf(message4, sizeof(message4), "");
-
-    bool clicked[6] = { false, false, false, false, false, false };
-    int offsetSin = 0;
-
-    int lastWindUpdateTime = 0, lastBatteryInterval=0;  // Temps de la dernière mise à jour du vent
-    int windUpdateInterval = 2000, batteryInterval = 3000; // Intervalle pour modifier le vent
-
-    int amplitude = sinusRect.h / 2 - 10;
-
-    int minutes = 0;
     while (running) {
         int startTime = SDL_GetTicks();
         // Création d'un évènement par jour
@@ -214,7 +216,7 @@ int main(int argc, char* argv[])
 
                 case SDL_MOUSEBUTTONDOWN:
                     clickImageButtons(rendu, event, images, clicked, message4, sizeof(message4), white, plants);
-                    clickButtonApp(rendu, event, appButtons, message4, sizeof(message4), white);
+                    clickButtonApp(rendu, event, appButtons, message4, sizeof(message4), white,realTime, running);
                     heuremessage = hour;
 
                     break;
@@ -237,19 +239,20 @@ int main(int argc, char* argv[])
                 // Mise en pause pour laisser le CPU travailler sur d'autres tâches
                 SDL_Delay(intervalle - (temps - tempsPrecedent));
             }
-
             SDL_RenderClear(rendu);
+
             // Affichage de l'image de fond et de la 
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
-            // Dessin des centrales énergétiques 
-            //draw_energy_plant_widget(rendu, plants);
+            // Dessin des centrales énergétiques (jauge, légende puis image)
+            // Jauges dessinées volontairement derrière les images des centrales
+            legend_plant_production(rendu, plants, font2);
+            draw_energy_plant_production(rendu, plants);
+
             for (int i = 0; i < 6; i++) {
                 SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
             }
-
-            // Leur production et leurs légendes
-            draw_energy_plant_production(rendu, plants);
-            legend_plant_production(rendu, plants, font2);
+                       
+            
             // Dessin des boutons si une centrale est cliquée
             for (int i = 0; i < 6; i++) {
                 if (clicked[i]) {

@@ -111,7 +111,7 @@ void update_co2_and_cost(Energyplant plants[6]) {
 	}
 }
 void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant,  int currentHour) { // Elle marche
-	solarPlant->currentProduction = 50.0f * max(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
+	solarPlant->currentProduction = 50.0f * fmax(0.0f, sin(currentHour * PI / 12.0f - PI / 2.0f));
 	windPlant->currentProduction = 60.0f * (wind / 100);
 }
 void update_battery(Energyplant* plant) {
@@ -460,7 +460,7 @@ void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plant[6]) {
 
 		// Définir la transparence
 		images[i].alpha = 100;  // Semi-transparent au début
-		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
+		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);		
 	}
 }
 

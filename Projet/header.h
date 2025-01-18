@@ -19,10 +19,6 @@
 #define INCREASE 1
 #define DECREASE -1
 
-#define max(a, b) ((a) > (b) ? (a) : (b))  
-#define min(a, b) ((a) < (b) ? (a) : (b)) 
-
-
 
 // Enums
 enum Buttontype { POWER_PLUS, POWER_MINUS, STORAGE_PLUS, STORAGE_MINUS, QUIT, FASTER, SLOWER };
@@ -77,55 +73,58 @@ typedef struct
 
 // Prototypes des fonctions
 
-// Valeurs générales calculées
-
-void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs);
-
-float current_production(Energyplant plants[6]);
-double current_satisfaction(Energyplant plants[6]);
-double current_CO2(Energyplant plants[6]);
-float demand_at(int hour);
-float current_demand(int hour);
-float future_demand(int hour, int delta);
-
+// Fonctions liées au 'dessins' d'évènements, de rectangles etc...
 void drawGauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor);
 void draw_border(SDL_Renderer* renderer, int x, int y, int w, int h);
 void draw_button(SDL_Renderer* renderer, BUTTON button);
 void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float futureDemand);
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
+void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
 void draw_events(SDL_Renderer* renderer, Event chosenEvent);
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up);
+void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs);
 
+// Fonction calculant les données générales du jeu
+float current_production(Energyplant plants[6]);
+double current_satisfaction(Energyplant plants[6]);
+double current_CO2(Energyplant plants[6]);
+float demand_at(int hour);
+float current_demand(int hour);
+double current_cost(Energyplant plants[6]);
+float future_demand(int hour, int delta);
+
+// Fonctions générant des données de manière aléatoire
 void create_wind();
 void create_event( Event events[], int event_count, float* totalDemand, int hour,
     char message[], char message3[], size_t messageSize);
 
-
+// Fonctions liées aux modifications de certains paramètres 
+void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], SDL_Renderer* renderer);
 void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant, int currentHour);
 void update_battery(Energyplant* plant);
 void update_background(SDL_Texture* texture_fond, int hour);
 void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energyplant* windPlant);
-double current_cost(Energyplant plants[6]);
 void update_co2_and_cost(Energyplant plants[6]);
-void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
-void display_datas(SDL_Renderer* renderer);
-void destroyImages();
 
+// Foncitons de rendu sous forme de texte
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color,
     SDL_Rect position);
+void display_datas(SDL_Renderer* renderer);
+void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
+
+// Fonctions liées au évènements (clic de souris et mouvement de souris)
 bool isRectClicked(int x, int y, SDL_Rect button);
 void handleMouseMotion(SDL_Event& event, Image images[6], bool clicked[6]);
 void clickImageButtons(SDL_Renderer* renderer, SDL_Event event, Image images[], bool clicked[], char message[],
     size_t messageSize, SDL_Color color, Energyplant plants[]);
-void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[4],
-    char message[], size_t messageSize, SDL_Color& white);
+void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[3],
+    char message[], size_t messageSize, SDL_Color& white, int &realTime, int &running);
 void handleKeyDown(SDL_Event& event, int continuer);
-int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** texture);
-// !!!!!! Une seule plant en paramètre
-void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], SDL_Renderer* renderer);
-void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
+// Fonctions liées aux chargements d'image et destruction
+int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** texture);
+void destroyImages();
 
 
 extern int realTime;
@@ -150,7 +149,6 @@ extern SDL_Texture* sunTexture;
 extern SDL_Texture* moonTexture;
 extern double wind;
 extern int heuremessage;
-
 
 
 #endif
