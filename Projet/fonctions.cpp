@@ -209,27 +209,26 @@ double current_satisfaction(Energyplant plants[6]) {
 		generalSatisfaction += plants[i].currentSatisfaction;
 	}
 	if (totalDemand > totalProduction) {
-		// Si la demande est supérieure à la production, pénalité proportionnelle
-		generalSatisfaction -= (totalDemand - totalProduction) / totalDemand * 5.0;
+		// Si la demande est supérieure à la production, pénalité proportionnelle accrue
+		generalSatisfaction -= (totalDemand - totalProduction) / totalDemand * 15.0;
 	}
 	else {
-		// Si la production dépasse la demande, bonus limité ou pénalité si trop excessif
+		// Si la production dépasse la demande, appliquer des ajustements pour la surproduction
 		double excessProductionRatio = (totalProduction - totalDemand) / totalDemand;
-		if (excessProductionRatio > 0.5) {
-			generalSatisfaction -= log10(1 + excessProductionRatio) * 20.0; // Pénalité douce pour encourager surprod par sécu
+		if (excessProductionRatio > 0.3) {
+			// Malus plus sévère pour une surproduction importante
+			generalSatisfaction -= log10(1 + excessProductionRatio) * 20.0;
 		}
 		else {
-			generalSatisfaction += excessProductionRatio * 20.0; // Bonus pour une production légèrement excédentaire
+			// Ajustement plus doux pour une surproduction légère
+			generalSatisfaction += excessProductionRatio * 1.5; // bonus
 		}
 	}
 
-	
 	// S'assurer que la satisfaction reste dans les limites [0, 10]
-	// Puis conversion en int
-	generalSatisfaction = (int)round(fmax(0.0, fmin(generalSatisfaction, 10.0))); //sinon c'était négatif
+	generalSatisfaction = (int)round(fmax(0.0, fmin(generalSatisfaction, 10.0)));
 
 	return generalSatisfaction;
-
 }
 
 
