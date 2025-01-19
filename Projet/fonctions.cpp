@@ -52,13 +52,13 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 			case FOSSIL:
 			case HYDRO:
 				plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
-				animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
+				animate_lightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
 				break;
 			case BATTERY:
 				if (plant->storageRatio >= 5.0) {
 					plant->currentProduction += (5.0 / 100) * plant->maximumProduction;
 					plant->storageRatio -= (5.0 / 100) * plant->storageRatio;
-					animateLightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
+					animate_lightning(renderer, plant->x + plant->width / 2, plant->y, 600, 300, 100);
 				}
 				break;
 			}
@@ -75,9 +75,9 @@ void update_production(Energyplant* plant, enum Buttontype buttontype, Energypla
 				plant->currentProduction -= (5.0 / 100) * plant->maximumProduction;
 				plants[5].storageRatio += (5.0 / 100) * plant->maximumProduction;
 
-				animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height,
+				animate_lightning(renderer, plant->x + plant->width / 2, plant->y + plant->height,
 					plant->x + plant->width / 2, plant->y + plant->height + 100, 50);
-				animateLightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
+				animate_lightning(renderer, plant->x + plant->width / 2, plant->y + plant->height + 100,
 					plants[5].x + plants[5].width / 2, plants[5].y + plants[5].height + 100, 100);
 
 				if (plants[5].storageRatio >= 100.0) {
@@ -153,7 +153,6 @@ float future_demand(int hour, int delta) {
 	int futureHour = (hour + delta) % 24; // assure que l'heure reste entre 0 et 23
 	return demand_at(futureHour); // demande future
 }
-
 float current_demand(int hour) {
 	totalDemand = demand_at(hour); // demande actuelle
 	return totalDemand;
@@ -338,8 +337,9 @@ void draw_button(SDL_Renderer* renderer, BUTTON button) {
 	}
 	render_text(renderer, font2, label, black, textRect);
 }
-void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour) {
+void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour, SDL_Texture* sunTexture, SDL_Texture* moonTexture, SDL_Rect sunRect, SDL_Rect moonRect) {
 	// Définir les couleurs pour les fonds
+	draw_gauge(renderer, sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h,1,white);
 	if (currentHour > 7 && currentHour < 19) {
 		SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255); // Jaune clair
 		SDL_Rect topRect = { sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h / 2 };
@@ -352,12 +352,12 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 	}
 
 	// Dessiner les bordures du rectangle
-	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2,
-		sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2); // Axe des abscisses
-	draw_border(renderer, sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h/2); // Bordure du contour
-	
-	// Dessiner la sinusoïde
-	double displayPeriod = 12.0; // afficher que les 12 prochaines heures
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Noir 
+	SDL_RenderDrawLine(renderer, sinusRect.x, sinusRect.y + sinusRect.h / 2, sinusRect.x + sinusRect.w, sinusRect.y + sinusRect.h / 2); // Axe des abscisses
+	draw_border(renderer, sinusRect.x, sinusRect.y, sinusRect.w, sinusRect.h); // Bordure du contour
+
+	// Dessiner la courbe sinusoïdale
+	double displayPeriod = 12.0; // Afficher les 12 prochaines heures
 	double hoursPerPixel = displayPeriod / sinusRect.w; // Conversion des pixels en heures (par rapport à la période affichée)
 	for (int x = 0; x < sinusRect.w; x++) {
 		double time = currentHour + x * hoursPerPixel; // Heure correspondant au pixel x
@@ -366,12 +366,32 @@ void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int cur
 		y = sinusRect.y + sinusRect.h / 2 - y; // Ajuster l'origine au centre du rectangle
 		SDL_RenderDrawPoint(renderer, sinusRect.x + x, y);
 	}
+
+	// Dessiner les textures (soleil et lune)
+	SDL_RenderCopy(renderer, sunTexture, NULL, &sunRect);
+	SDL_RenderCopy(renderer, moonTexture, NULL, &moonRect);
 }
+
+
+void draw_central_and_buttons(SDL_Renderer* renderer, Energyplant plants[], bool clicked[]) {
+	for (int i = 0; i < 6; i++) {
+		SDL_RenderCopy(renderer, images[i].texture, NULL, &images[i].rect);
+		if (clicked[i]) {
+			for (int j = 0; j < 4; j++) {
+				// Vérifie si le bouton est valide avant de le dessiner
+				if (plants[i].buttons[j].rect.w > 0 && plants[i].buttons[j].rect.h > 0) {
+					draw_button(renderer, plants[i].buttons[j]);
+				}
+			}
+		}
+	}
+}
+
 
 //Fonction qui dessine un rectangle et change sa couleur selon des paramètres
 // Utilisation dans les fonctions pour tracer la production, la capacité de la batterie et les jauges de 
 // demande et production (en haut à gauche)
-void drawGauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor) {
+void draw_gauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor) {
 	// Dessiner le rectangle intérieur
 	SDL_SetRenderDrawColor(renderer, fillColor.r, fillColor.g, fillColor.b, fillColor.a);
 	SDL_Rect fillRect = { x, y, (int)(width * ratio), height };
@@ -389,7 +409,7 @@ void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float f
 
 	// Jauge pour la demande
 	SDL_Color demandColor = getColorFromRatio(ratioDemand);
-	drawGauge(renderer, 10, 10, 400, 25, ratioDemand, demandColor);
+	draw_gauge(renderer, 10, 10, 400, 25, ratioDemand, demandColor);
 	draw_border(renderer, 10, 10, 400, 25);
 	
 	// Ajouter le texte "Demand"
@@ -404,7 +424,7 @@ void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float f
 
 	// Jauge pour la production
 	SDL_Color productionColor = getColorFromRatio(ratioProduction);
-	drawGauge(renderer, 10, 40, 400, 25, ratioProduction, productionColor);
+	draw_gauge(renderer, 10, 40, 400, 25, ratioProduction, productionColor);
 	draw_border(renderer, 10, 40, 400, 25);
 	
 	// Ajouter le texte "Production"
@@ -431,7 +451,7 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 		int xOffset = (plants[i].type == BATTERY) ? 30 : 100;
 
 		// Dessiner la jauge principale (production)
-		drawGauge(renderer, plants[i].x + xOffset, yOffset, 75, adjustedHeight, 1.0f, productionColor);
+		draw_gauge(renderer, plants[i].x + xOffset, yOffset, 75, adjustedHeight, 1.0f, productionColor);
 		draw_border(renderer, plants[i].x + xOffset,  plants[i].y + 100,  75, plants[i].height);
 		
 		// Si c'est une batterie, ajouter une jauge de capacité
@@ -443,7 +463,7 @@ void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6])
 			int capacityY = plants[i].y + 100 + plants[i].height - capacityHeight; // La jauge de batterie commence aussi en bas
 
 			// Dessiner la jauge de capacité
-			drawGauge(renderer, plants[i].x + 120, capacityY, 30, capacityHeight, 1.0f, batteryColor);
+			draw_gauge(renderer, plants[i].x + 120, capacityY, 30, capacityHeight, 1.0f, batteryColor);
 			draw_border(renderer,plants[i].x + 120,plants[i].y + 100,30,plants[i].height);
 			
 		}
@@ -476,7 +496,7 @@ void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up) {
 	}
 }
 
-void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
+void animate_lightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs) {
 	// Charger l'image de l'éclair
 	SDL_Texture* lightningTexture = NULL;
 	if (load_image(renderer, "./assets/eclair.png", &lightningTexture) != 0) {
@@ -587,7 +607,7 @@ int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** text
 	}
 	return 0;
 }
-void destroyImages() {
+void destroy_images() {
 	for (int i = 0; i < 5; i++) {
 		SDL_DestroyTexture(images[i].texture);
 	}

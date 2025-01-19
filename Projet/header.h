@@ -74,16 +74,19 @@ typedef struct
 // Prototypes des fonctions
 
 // Fonctions liées au 'dessins' d'évènements, de rectangles etc...
-void drawGauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor);
+void draw_gauge(SDL_Renderer* renderer, int x, int y, int width, int height, float ratio, SDL_Color fillColor);
 void draw_border(SDL_Renderer* renderer, int x, int y, int w, int h);
 void draw_button(SDL_Renderer* renderer, BUTTON button);
+void draw_central_and_buttons(SDL_Renderer* renderer, Energyplant plants[], bool clicked[]);
 void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float futureDemand);
 void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
-void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
+void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour, SDL_Texture* sunTexture,
+    SDL_Texture* moonTexture, SDL_Rect sunRect, SDL_Rect moonRect);
+//void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour);
 void draw_events(SDL_Renderer* renderer, Event chosenEvent);
 void draw_arrow(SDL_Renderer* renderer, int x, int y, bool up);
-void animateLightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs);
+void animate_lightning(SDL_Renderer* renderer, int startX, int startY, int endX, int endY, int durationMs);
 
 // Fonction calculant les données générales du jeu
 float current_production(Energyplant plants[6]);
@@ -114,17 +117,17 @@ void display_datas(SDL_Renderer* renderer);
 void legend_plant_production(SDL_Renderer* renderer, Energyplant plant[6], TTF_Font* font);
 
 // Fonctions liées au évènements (clic de souris et mouvement de souris)
-bool isRectClicked(int x, int y, SDL_Rect button);
+bool mouse_in_rect(int x, int y, SDL_Rect button);
 void handleMouseMotion(SDL_Event& event, Image images[6], bool clicked[6]);
 void clickImageButtons(SDL_Renderer* renderer, SDL_Event event, Image images[], bool clicked[], char message[],
     size_t messageSize, SDL_Color color, Energyplant plants[]);
 void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[3],
     char message[], size_t messageSize, SDL_Color& white, int &realTime, int &running);
-void handleKeyDown(SDL_Event& event, int continuer);
+void handleKeyDown(SDL_Event& event, int &running);
 
 // Fonctions liées aux chargements d'image et destruction
 int load_image(SDL_Renderer* renderer, const char* imagePath, SDL_Texture** texture);
-void destroyImages();
+void destroy_images();
 
 
 extern int realTime;

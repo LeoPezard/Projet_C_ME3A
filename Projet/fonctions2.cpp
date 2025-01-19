@@ -1,28 +1,38 @@
 #include"header.h"
 
+// Ce fichier contient les fonctions liées aux évènements : Souris et clavier
+
+// Fonction qui va servir à vérifier si la position de la souris est dans un rectangle
+bool mouse_in_rect(int x, int y, SDL_Rect rect) {
+	return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
+}
+
+// Fonction qui gère les mouvements de la souris (pas les clics)
+// Va permettre de changer la transparence des images des centrales selon la position de la souris
 void handleMouseMotion(SDL_Event& event, Image images[6], bool clicked[6]) {
+	// Position de la souris
 	int x = event.motion.x;
 	int y = event.motion.y;
 
+	// images[i].alpha est le niveau de transparence
 	for (int i = 0; i < 6; i++) {
+		// Si l'image à déjà été cliquée, la laisser opaque (alpha = 255)
 		if (clicked[i]) {
 			images[i].alpha = 255;
 		}
-		else if (x >= images[i].rect.x && x <= images[i].rect.x + images[i].rect.w &&
-			y >= images[i].rect.y && y <= images[i].rect.y + images[i].rect.h) {
+		// Si les coordonées de la souris sont dans un rectangle d'une image, la rendre opaque
+		else if( mouse_in_rect(x,y,images[i].rect)) {
 			images[i].alpha = 255;
 		}
-		else {
+		else { // La rendre transparente
 			images[i].alpha = 100;
 		}
+		// Application du niveau de transparence
 		SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 	}
 }
 
-bool isRectClicked(int x, int y, SDL_Rect rect) {
-	return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
-}
-
+// Fonction qui gère les clics de la souris sur des boutons de l'application (faster, slower et quit)
 void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[3],
 	char message[], size_t messageSize, SDL_Color& white, int &realTime, int &running) {
 	if (event.button.button == SDL_BUTTON_LEFT) {
@@ -31,36 +41,29 @@ void clickButtonApp(SDL_Renderer* renderer, SDL_Event& event, BUTTON appButtons[
 
 		// Vérification des clics sur les boutons de l'app
 		for (int i = 0; i < 3; i++) {
-			if (isRectClicked(x, y, appButtons[i].rect)) {
+			if (mouse_in_rect(x, y, appButtons[i].rect)) {
 				if (appButtons[i].type == QUIT) {
+					// Running est la variable pour la boucle infinie utilisée pour le jeu --> arrêter le jeu
 					running = 0;
 				}
+				// Changer le temps réel pour 1 heure dans le jeu
 				if (appButtons[i].type == FASTER) {
-					if (realTime > 300) {
-						realTime -= 300;
-						if (realTime < 300) {
-							realTime = 100;
-						}
-					}
+					realTime -= 300;	
 					snprintf(message, messageSize, "Faster");
 				}
-
 				if (appButtons[i].type == SLOWER) {
-					if (realTime < 5000) {
-						realTime += 300;
-						if (realTime > 5000) {
-							realTime = 5000;
-						}
-					}
+					realTime += 300;
 					snprintf(message, messageSize, "Slower");
 				}
+				// Limiter la valeur 
+				realTime = fmax(300, fmin(realTime, 5000));
 
 			}
 		}
 	}
 }
 
-
+// Fonction qui gère les clics de la souris pour les clics sur les images des centrales
 void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],bool clicked[],char message[],
 	size_t messageSize,SDL_Color color,Energyplant plants[]) {
 	if (event.button.button == SDL_BUTTON_LEFT) {
@@ -71,8 +74,9 @@ void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],boo
 		for (int i = 0; i < 6; i++) {
 			if (clicked[i]) {  // Vérifier uniquement les boutons des images actives
 				for (int j = 0; j < 4; j++) {
-					if (isRectClicked(x, y, plants[i].buttons[j].rect)) {
-						// Effectuer l'action du bouton
+					if (mouse_in_rect(x, y, plants[i].buttons[j].rect)) {
+						// Effectuer l'action du bouton (fonction update_production plus bas)
+						// et afficher des messages d'information
 						if (plants[i].buttons[j].type == POWER_PLUS) {
 							snprintf(message, messageSize, "Augmentation de la production");
 						}
@@ -85,6 +89,8 @@ void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],boo
 						else if (plants[i].buttons[j].type == STORAGE_MINUS) {
 							snprintf(message, messageSize, "Reduction du stockage");
 						}
+						// Fonctions dans un autre fichier qui modifie la production de chaque centrale et gère le stockage
+						// selon le type de bouton cliqué
 						update_production(&plants[i], plants[i].buttons[j].type, plants, renderer);
 						return; // Sortir de la fonction après avoir traité le clic sur un bouton
 					}
@@ -94,48 +100,34 @@ void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],boo
 
 		// Vérification des clics sur les images
 		for (int i = 0; i < 6; i++) {
-			if (isRectClicked(x, y, images[i].rect)) {
+			if (mouse_in_rect(x, y, images[i].rect)) {
 				// Si l'image est déjà cliquée, la rendre transparente
 				if (clicked[i]) {
 					images[i].alpha = 100;
 					clicked[i] = false;
 				}
-				else {
+				else { // Sinon la rendre opaque
 					images[i].alpha = 255;
 					clicked[i] = true;
-
-					// Positionner les boutons sous l'image cliquée
-					for (int j = 0; j < 2; j++) {
-						plants[i].buttons[j].rect.x = images[i].rect.x + j * (plants[i].buttons[j].rect.w + 10);
-						plants[i].buttons[j].rect.y = images[i].rect.y + images[i].rect.h + 10;
-					}
-					for (int j = 2; j < 4; j++) {
-						plants[i].buttons[j].rect.x = images[i].rect.x + (j - 2) * (plants[i].buttons[j].rect.w + 10);
-						plants[i].buttons[j].rect.y = images[i].rect.y + images[i].rect.h + 50;
-					}
 				}
 			}
 			else {
 				images[i].alpha = 100;
 				clicked[i] = false;
 			}
+			// Mise à jour de la transparence de l'image 
 			SDL_SetTextureAlphaMod(images[i].texture, images[i].alpha);
 		}
 	}
 }
 
-
-void handleKeyDown(SDL_Event& event, int continuer) {
+// Gère les évènements de clavier
+void handleKeyDown(SDL_Event& event, int &running) {
 	switch (event.key.keysym.sym) {
-	case SDLK_ESCAPE:
-		continuer = 0; // Quitter la boucle
-		break;
-	case SDLK_g:
-		printf("Touche 'g' détectée\n");
-		// Ajouter ici la logique pour la touche 'g'
+	case SDLK_ESCAPE: // Touche échap cliquée
+		running = 0; // Quitter la boucle
 		break;
 	default:
-		printf("Touche non gérée : %d\n", event.key.keysym.sym);
 		break;
 	}
 }

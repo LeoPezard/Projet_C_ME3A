@@ -1,12 +1,10 @@
 ﻿#include"header.h"
 
-
+// Initialisation de variables externes pour éviter des bugs
 TTF_Font* font1 = NULL;
 TTF_Font* font2 = NULL;
 TTF_Font* font3 = NULL;
 Image images[6];
-int running = 1;
-int hour = 0;
 SDL_Color white = { 255, 255, 255, 255 };
 SDL_Color black = { 0, 0, 0, 255 };
 Event chosenEvent;
@@ -14,11 +12,13 @@ float totalProduction = 0;
 double generalSatisfaction = 0;
 double generalCO2 = 0;
 double generalCost = 0;
-float totalDemand = 55000.0; // demande minimale (nuit, avant 6h)
+float totalDemand = 60000.0; // demande minimale (nuit, avant 6h)
 double wind = 0;
 double cost = 0;
 int realTime = 3000; // Temps pour 1 heure
 int heuremessage = 0;
+int running = 1;
+int hour = 0;
 
 
 //--------------------------------------------------------------
@@ -50,8 +50,6 @@ int main(int argc, char* argv[])
     BUTTON buttonQuit = { {L_FENETRE / 2, H_FENETRE - 30, 70, 30}, QUIT };
     BUTTON appButtons[3] = { button1, button2, buttonQuit};
 
-    
-
     // Initialisation des messages 
     char message1[256], message2[35], message3[256], message4[256], hour_text[256];
     snprintf(message1, sizeof(message1), "Event of the day :");
@@ -71,50 +69,50 @@ int main(int argc, char* argv[])
     Energyplant plants[6] = {
     {"Gas Power Plant", FOSSIL, 300.0, 28.0,28.0, 4.0, 80.0, 60.0, 0.7, 1, 1, 0, 425, 200, 200,
         {
-            {{100, 630, 30, 30}, POWER_PLUS},
-            {{350, 630, 30, 30}, POWER_MINUS},
-            {{10, 655, 30, 30}, STORAGE_PLUS},
-            {{250, 655, 30, 30}, STORAGE_MINUS}
+            {{10, 630, 30, 30}, POWER_PLUS},
+            {{50, 630, 30, 30}, POWER_MINUS},
+            {{10, 680, 30, 30}, STORAGE_PLUS},
+            {{50, 680, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Solar Power Plant", SOLAR, 50.0, 18.24,18.24, 7.5, 10.0, 60.0, 0.7, 0, 1, 200, 425, 200, 200,
         {
             {{0, 0, 0, 0}, POWER_PLUS},
             {{0, 0, 0, 0}, POWER_MINUS},
-            {{410, 655, 30, 30}, STORAGE_PLUS},
-            {{450, 655, 30, 30}, STORAGE_MINUS}
+            {{210, 680, 30, 30}, STORAGE_PLUS},
+            {{250, 680, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Wind Power Plant", WIND, 60.0, 18.0,18.0, 7.5, 10.0, 60.0, 0.7, 0, 1, 400, 425, 200, 200,
         {
             {{0, 0, 0, 0}, POWER_PLUS},
             {{0, 0, 0, 0}, POWER_MINUS},
-            {{610, 655, 30, 30}, STORAGE_PLUS},
-            {{650, 655, 30, 30}, STORAGE_MINUS}
+            {{410, 680, 30, 30}, STORAGE_PLUS},
+            {{450, 680, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Nuclear Power Plant", NUCLEAR, 200.0, 120.0,120.0, 8.0, 80.0, 60.0, 0.7, 0, 1, 600, 425, 200, 200,
         {
             {{0, 0, 0, 0}, POWER_PLUS},
             {{0, 0, 0, 0}, POWER_MINUS},
-            {{810, 655, 30, 30}, STORAGE_PLUS},
-            {{850, 655, 30, 30}, STORAGE_MINUS}
+            {{610, 680, 30, 30}, STORAGE_PLUS},
+            {{650, 680, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Hydraulic Power Plant", HYDRO, 100.0, 48.0,48.0, 8.0, 10.0, 60.0, 0.7, 1, 1, 800, 425, 200, 200,
         {
-            {{10, 630, 30, 30}, POWER_PLUS},
-            {{40, 630, 30, 30}, POWER_MINUS},
-            {{1010, 655, 30, 30}, STORAGE_PLUS},
-            {{1050, 655, 30, 30}, STORAGE_MINUS}
+            {{810, 630, 30, 30}, POWER_PLUS},
+            {{850, 630, 30, 30}, POWER_MINUS},
+            {{810, 680, 30, 30}, STORAGE_PLUS},
+            {{850, 680, 30, 30}, STORAGE_MINUS}
         },
     },
     {"Battery Power Plant", BATTERY, 50.0, 0.0,5.0, 6.0, 0.0, 60.0, 0.7, 1, 0, 1000, 425, 200, 200,
         {
-            {{10, 630, 30, 30}, POWER_PLUS},
-            {{40, 630, 30, 30}, POWER_MINUS},
-            {{1210, 0, 0, 0}, STORAGE_PLUS},
-            {{1250, 0, 0, 0}, STORAGE_MINUS},
+            {{1010, 630, 30, 30}, POWER_PLUS},
+            {{1050, 630, 30, 30}, POWER_MINUS},
+            {{1010, 680, 0, 0}, STORAGE_PLUS},
+            {{1050, 680, 0, 0}, STORAGE_MINUS},
         },
     }
     };
@@ -136,7 +134,6 @@ int main(int argc, char* argv[])
     font3 = TTF_OpenFont("arial.ttf", 15);
 
 
-    
     // 1) Creation de la fenetre
     //-------------------------
     fenetrePrincipale = SDL_CreateWindow("Projet Morin-Pezard", // titre
@@ -171,12 +168,16 @@ int main(int argc, char* argv[])
     };
     // 2) Test de la librairie Image
     //-----------------------------
-    texture_fond = IMG_LoadTexture(rendu, "./assets/background.png");
-    sun = IMG_LoadTexture(rendu, "./assets/sun.png");
-    moon = IMG_LoadTexture(rendu, "./assets/moon.png");
-    if (texture_fond == NULL || sun == NULL || moon == NULL) {
+    // 
+    // La fonction load_image renvoie -1 si l'image ne peux pas être chargée, sinon elle attribue au pointeur 
+    // en paramètre la valeur de son chargement d'image (voir fonctions.cpp)
+
+    // Chargement des tertures principales
+    if (load_image(rendu, "./assets/background.png", &texture_fond) == -1 ||
+        load_image(rendu, "./assets/sun.png", &sun) == -1 ||
+        load_image(rendu, "./assets/moon.png", &moon) == -1) {
         printf("Erreur de chargement de l'image %s: \n", SDL_GetError());
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); // Quitter si une image ne peut pas être chargée
     }
     // Vérification du chargement des images avant les modifications des centrales
     for (int i = 0; i < 6; i++) {
@@ -186,15 +187,16 @@ int main(int argc, char* argv[])
             exit(EXIT_FAILURE); // Erreur de chargement
         }
     }
+    // Dessin des centrales sur le rendu
     draw_energy_plant_widget(rendu, plants);
-    // 3) creation des variables
-
+   
+    // Boucle du jeu
     while (running) {
         int startTime = SDL_GetTicks();
         // Création d'un évènement par jour
         create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message2, message3, sizeof(message3));
         while (hour < 24 && running != 0) {
-            
+            // Modifier la valeur des minutes et des heures selon realTime qui est le temps réel pour 1h sur le jeu
             if (SDL_GetTicks() - startTime >= realTime / 60) {
                 minutes += 1;
                 startTime = SDL_GetTicks();
@@ -203,25 +205,26 @@ int main(int argc, char* argv[])
                     hour++;
                 }
             }
+            // Gestion des évènements, les fonctions de fonctions2.cpp sont appelées 
+            // car liées spécialement aux évènements 
             SDL_Event event;
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
-                case SDL_QUIT:
+                case SDL_QUIT: // Fermeture de la fenêtre
                     running = 0;
                     break;
 
-                case SDL_MOUSEMOTION:
+                case SDL_MOUSEMOTION: // Mouvement de souris
                     handleMouseMotion(event, images, clicked);
                     break;
 
-                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONDOWN: // Clic de souris
                     clickImageButtons(rendu, event, images, clicked, message4, sizeof(message4), white, plants);
                     clickButtonApp(rendu, event, appButtons, message4, sizeof(message4), white,realTime, running);
                     heuremessage = hour;
-
                     break;
 
-                case SDL_KEYDOWN:
+                case SDL_KEYDOWN: // Evènement de clavier
                     handleKeyDown(event, running);
                     break;
 
@@ -229,7 +232,6 @@ int main(int argc, char* argv[])
                     break;
                 }
             }
-
             // Mise à jour du temps
             temps = SDL_GetTicks();
             if (temps - tempsPrecedent > intervalle) {
@@ -241,32 +243,18 @@ int main(int argc, char* argv[])
             }
             SDL_RenderClear(rendu);
 
-            // Affichage de l'image de fond et de la 
+            // Affichage de l'image de fond
             SDL_RenderCopy(rendu, texture_fond, NULL, &destination);
-            // Dessin des centrales énergétiques (jauge, légende puis image)
+            // Modifie le fond selon l'heure de la journée
+            update_background(texture_fond, hour);
+            // Dessin des centrales énergétiques (jauge, légende puis image et boutons)
             // Jauges dessinées volontairement derrière les images des centrales
-            legend_plant_production(rendu, plants, font2);
-            draw_energy_plant_production(rendu, plants);
-
-            for (int i = 0; i < 6; i++) {
-                SDL_RenderCopy(rendu, images[i].texture, NULL, &images[i].rect);
-            }
-                       
+            legend_plant_production(rendu, plants, font2); // Texte au dessus de chaque centrale
+            draw_energy_plant_production(rendu, plants); // Jauges
+            draw_central_and_buttons(rendu, plants, clicked); // Images et boutons selon la condition clicked
             
-            // Dessin des boutons si une centrale est cliquée
-            for (int i = 0; i < 6; i++) {
-                if (clicked[i]) {
-                    for (int j = 0; j < 4; j++) {
-                        // Vérifie si le bouton est valide (ex dimensions non nulles) pour ne pas écrire les '+' et '-' dans le vide
-                        // Si le bouton n'est pas valide (volontairement) on ne dessine pas 
-                        // Exemple bouton d'augmentation manuelle de production du solaire
-                        if (plants[i].buttons[j].rect.w > 0 && plants[i].buttons[j].rect.h > 0) {
-                            draw_button(rendu, plants[i].buttons[j]);
-                        }
-                    }
-                }
-            }
-            // Boutons de l'application
+            // Boutons de l'application et évènement du jour
+            draw_events(rendu, chosenEvent);
             draw_button(rendu, button1);
             draw_button(rendu, button2);
             draw_button(rendu, buttonQuit);
@@ -277,23 +265,21 @@ int main(int argc, char* argv[])
                 
             }
 
-            // affichage du message
-            draw_events(rendu, chosenEvent);
+            // Affichage des messages d'information
             render_text(rendu, font2, message1, black, info1);
             render_text(rendu, font2, message2, black, info2);
             render_text(rendu, font3, message3, white, info3);
             render_text(rendu, font1, message4, black, info4);
             render_text(rendu, font1, hour_text, black, HourRect);
-            
+            // Mise à jour de l'affichage de l'heure
             snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
             
-            // Modifie le fond selon l'heure de la journée
-            update_background(texture_fond, hour);
-            
-            if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) {
+                        
+            if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) { // Intervalle pour modifier la valeur du vent
                 create_wind();  // Créer un nouveau vent
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
+            // Intervalle pour modifier la valeur de la batterie (décharge)
             if (SDL_GetTicks() - lastBatteryInterval >= batteryInterval) {
                 update_battery(&plants[5]);  // Changer la batterie (se décharge)
                 lastBatteryInterval = SDL_GetTicks();
@@ -304,14 +290,9 @@ int main(int argc, char* argv[])
             draw_demand_production(rendu, totalDemand, future_demand(hour, 2));
             // Affiche les données (en texte) sur la fenêtre
             display_datas(rendu);
-
-            SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); // Blanc
-            SDL_RenderFillRect(rendu, &sinusRect);
-
-            // Dessiner la courbe sinusoïdale dans le rectangle
-            draw_sun(rendu, sinusRect, amplitude, hour);
-            SDL_RenderCopy(rendu, sun, NULL, &sunRect);
-            SDL_RenderCopy(rendu, moon, NULL, &moonRect);
+            // Dessin de la courbe de l'ensoleillement
+            draw_sun(rendu, sinusRect, amplitude, hour, sun,
+                moon, sunRect, moonRect);
             
             // Mettre à jour le décalage
             offsetSin += 1;
@@ -327,7 +308,7 @@ int main(int argc, char* argv[])
     SDL_DestroyWindow(fenetrePrincipale);
     SDL_DestroyRenderer(rendu);
     SDL_DestroyTexture(texture_fond);
-    destroyImages();
+    destroy_images();
 
     // Libération de la mémoire SDL
     SDL_Quit();
