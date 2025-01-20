@@ -3,7 +3,7 @@
  * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
  * Date : 20 janvier 2025
  * Description : Ce fichier contenant les fonctions liées au jeu (données, calcul des valeurs, dessin sur le rendu...)
- */
+ */;
 
 
 #include "header.h"
@@ -133,7 +133,7 @@ void update_co2_and_cost(Energyplant plants[6]) {
 // Fonction qui modifie la production des centrales solaire et éoliennes 
 // en fonction de l'heure et du vent (variables externes)
 void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant) { // Elle marche
-	solarPlant->currentProduction = 50.0f * fmax(0.0f, sin(hour * PI / 12.0f - PI / 2.0f));
+	solarPlant->currentProduction = 50.0f * fmax(0.0f, sin(hour * M_PI / 12.0f - M_PI / 2.0f));
 	windPlant->currentProduction = 60.0f * (wind / 100);
 }
 

@@ -3,7 +3,7 @@
  * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
  * Date : 20 janvier 2025
  * Description : Ce fichier contient les fonctions liées aux évènements : Souris et clavier
- */
+ */;
 
 
 #include"header.h"

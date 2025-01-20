@@ -12,7 +12,7 @@
  *  - les structures
  *  - les prototypages des fonctions regroupées par catégories
  *  - les variables externes
- */
+ */;
 
 #include <SDL.h>
 #include <string.h>
@@ -25,7 +25,6 @@
 
 #define L_FENETRE 1200
 #define H_FENETRE 800
-#define PI 3.14
 #define SIN_AMPLITUDE 100
 #define SIN_FREQUENCY (2*M_PI/24.0)
 #define SCROLL_SPEED 2
