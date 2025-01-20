@@ -1,6 +1,19 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+/*
+ * Auteurs : Léo Morin - Léo Pezard
+ * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
+ * Date : 20 janvier 2025
+ * Description : Ce fichier contient :
+ *  - les bibliothèques nécessaires au jeu
+ *  - les constantes définies (DEFINE)
+ *  - les énumérations (Enum)
+ *  - les structures
+ *  - les prototypages des fonctions regroupées par catégories
+ *  - les variables externes
+ */
+
 #include <SDL.h>
 #include <string.h>
 #include <stdio.h>
@@ -79,7 +92,7 @@ void draw_border(SDL_Renderer* renderer, int x, int y, int w, int h);
 void draw_button(SDL_Renderer* renderer, BUTTON button);
 void draw_central_and_buttons(SDL_Renderer* renderer, Energyplant plants[], bool clicked[]);
 void draw_demand_production(SDL_Renderer* renderer, float currentDemand, float futureDemand);
-void draw_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
+void position_energy_plant_widget(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_energy_plant_production(SDL_Renderer* renderer, Energyplant plants[6]);
 void draw_sun(SDL_Renderer* renderer, SDL_Rect sinusRect, int amplitude, int currentHour, SDL_Texture* sunTexture,
     SDL_Texture* moonTexture, SDL_Rect sunRect, SDL_Rect moonRect);
@@ -96,15 +109,15 @@ float demand_at(int hour);
 float current_demand(int hour);
 double current_cost(Energyplant plants[6]);
 float future_demand(int hour, int delta);
+void demand_with_event(Event event);
 
 // Fonctions générant des données de manière aléatoire
 void create_wind();
-void create_event( Event events[], int event_count, float* totalDemand, int hour,
-    char message[], char message3[], size_t messageSize);
+void create_event( Event events[], int event_count,char message[], char message3[], size_t messageSize);
 
 // Fonctions liées aux modifications de certains paramètres 
 void update_production(Energyplant* plant, enum Buttontype buttontype, Energyplant plants[6], SDL_Renderer* renderer);
-void update_production_sun_and_wind(Energyplant* solarPlant,Energyplant* windPlant, int currentHour);
+void update_production_sun_and_wind(Energyplant* solarPlant, Energyplant* windPlant);
 void update_battery(Energyplant* plant);
 void update_background(SDL_Texture* texture_fond, int hour);
 void update_current_params(Energyplant plants[6], Energyplant* solarPlant, Energyplant* windPlant);

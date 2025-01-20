@@ -1,6 +1,13 @@
+/*
+ * Auteurs : Léo Morin - Léo Pezard
+ * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
+ * Date : 20 janvier 2025
+ * Description : Ce fichier contient les fonctions liées aux évènements : Souris et clavier
+ */
+
+
 #include"header.h"
 
-// Ce fichier contient les fonctions liées aux évènements : Souris et clavier
 
 // Fonction qui va servir à vérifier si la position de la souris est dans un rectangle
 bool mouse_in_rect(int x, int y, SDL_Rect rect) {
@@ -78,16 +85,16 @@ void clickImageButtons(SDL_Renderer* renderer,SDL_Event event,Image images[],boo
 						// Effectuer l'action du bouton (fonction update_production plus bas)
 						// et afficher des messages d'information
 						if (plants[i].buttons[j].type == POWER_PLUS) {
-							snprintf(message, messageSize, "Augmentation de la production");
+							snprintf(message, messageSize, "Increase in production");
 						}
 						else if (plants[i].buttons[j].type == POWER_MINUS) {
-							snprintf(message, messageSize, "Diminution de la production");
+							snprintf(message, messageSize, "Decrease in production");
 						}
 						else if (plants[i].buttons[j].type == STORAGE_PLUS) {
-							snprintf(message, messageSize, "Stockage de l'energie");
+							snprintf(message, messageSize, "Increased energy storage");
 						}
 						else if (plants[i].buttons[j].type == STORAGE_MINUS) {
-							snprintf(message, messageSize, "Reduction du stockage");
+							snprintf(message, messageSize, "Decreased energy storage");
 						}
 						// Fonctions dans un autre fichier qui modifie la production de chaque centrale et gère le stockage
 						// selon le type de bouton cliqué

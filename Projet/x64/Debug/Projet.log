@@ -1,10 +1,18 @@
 ﻿  fonctions.cpp
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(150,26): warning C4244: 'return' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(177,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(442,25): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(443,22): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(507,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(508,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(514,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
-C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(515,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+  fonctions2.cpp
+  main.cpp
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(170,26): warning C4244: 'return' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(207,31): warning C4244: '+=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(497,25): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(498,22): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(550,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(551,15): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(557,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions.cpp(558,17): warning C4244: 'initialisation' : conversion de 'int' en 'float', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\fonctions2.cpp(59,20): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(28,15): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(202,44): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(280,53): warning C4018: '>=' : incompatibilité signed/unsigned
+C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\Projet\main.cpp(285,54): warning C4018: '>=' : incompatibilité signed/unsigned
+  Génération de code en cours...
   Projet.vcxproj -> C:\Users\33783\Desktop\ECOLE\POLYTECH\ME\Semestre 5\INFO\LANGUAGE_C\PROJET_C\x64\Debug\Projet.exe

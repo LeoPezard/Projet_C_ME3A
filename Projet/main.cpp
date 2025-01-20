@@ -1,4 +1,11 @@
-﻿#include"header.h"
+﻿/*
+ * Auteurs : Léo Morin - Léo Pezard
+ * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
+ * Date : 20 janvier 2025
+ * Description : Ce fichier contient le main du projet, qui permet son exécution.
+ */
+
+#include"header.h"
 
 // Initialisation de variables externes pour éviter des bugs
 TTF_Font* font1 = NULL;
@@ -25,7 +32,9 @@ int hour = 0;
 //--------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    srand(time(NULL));
+    srand(time(NULL)); // Initialise le générateur de nombres aléatoires avec l'heure système 
+    // pour obtenir des résultats différents à chaque exécution du programme
+
     // Declarations fenetres rendu
     SDL_Window* fenetrePrincipale = NULL;
     SDL_Renderer* rendu = NULL;
@@ -56,7 +65,7 @@ int main(int argc, char* argv[])
     snprintf(message4, sizeof(message4), "");
 
     // Initialisation de données du jeu (intervalle = durée de temps en ms d'actualisation)
-    int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1, eventTriggeredToday = 0, 
+    int temps = 0, tempsPrecedent = 0, intervalle = 20, direction = 1, eventTriggeredToday = 0, 
         offsetSin = 0, minutes = 0;
 
     int lastWindUpdateTime = 0, lastBatteryInterval = 0;  // Temps de la dernière mise à jour du vent
@@ -134,7 +143,7 @@ int main(int argc, char* argv[])
     font3 = TTF_OpenFont("arial.ttf", 15);
 
 
-    // 1) Creation de la fenetre
+    // Creation de la fenetre
     //-------------------------
     fenetrePrincipale = SDL_CreateWindow("Projet Morin-Pezard", // titre
         SDL_WINDOWPOS_UNDEFINED,    // position initiale en X
@@ -149,7 +158,7 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    // 2) Creation du rendu
+    // Creation du rendu
     //--------------------
     rendu = SDL_CreateRenderer(fenetrePrincipale, -1, SDL_RENDERER_ACCELERATED);
 
@@ -158,7 +167,7 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Impossible de charger le rendu : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
-
+    // Création des évènements possibles
     Event events[5] = {
         {"Major sporting", INCREASE, 50, 20,22, IMG_LoadTexture(rendu, "./assets/match.png")},
         {"Cold wave", INCREASE, 60, 10,23, IMG_LoadTexture(rendu, "./assets/cold.png")},
@@ -166,7 +175,7 @@ int main(int argc, char* argv[])
         {"Festival", INCREASE, 20, 10,23, IMG_LoadTexture(rendu, "./assets/musique.png")},
         {"Mass outdoor event", DECREASE, 35, 12,19,IMG_LoadTexture(rendu, "./assets/marathon.png")}
     };
-    // 2) Test de la librairie Image
+    // Test de la librairie Image
     //-----------------------------
     // 
     // La fonction load_image renvoie -1 si l'image ne peux pas être chargée, sinon elle attribue au pointeur 
@@ -187,14 +196,14 @@ int main(int argc, char* argv[])
             exit(EXIT_FAILURE); // Erreur de chargement
         }
     }
-    // Dessin des centrales sur le rendu
-    draw_energy_plant_widget(rendu, plants);
+    // Attribuer la position des cantrales sur la fenetre
+    position_energy_plant_widget(rendu, plants);
    
     // Boucle du jeu
     while (running) {
         int startTime = SDL_GetTicks();
         // Création d'un évènement par jour
-        create_event(events, sizeof(events) / sizeof(events[0]), &totalDemand, hour, message2, message3, sizeof(message3));
+        create_event(events, sizeof(events) / sizeof(events[0]),message2, message3, sizeof(message3));
         while (hour < 24 && running != 0) {
             // Modifier la valeur des minutes et des heures selon realTime qui est le temps réel pour 1h sur le jeu
             if (SDL_GetTicks() - startTime >= realTime / 60) {
@@ -206,7 +215,7 @@ int main(int argc, char* argv[])
                 }
             }
             // Gestion des évènements, les fonctions de fonctions2.cpp sont appelées 
-            // car liées spécialement aux évènements 
+            // car liées spécialement aux évènements de souris et clavier
             SDL_Event event;
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
@@ -274,8 +283,8 @@ int main(int argc, char* argv[])
             // Mise à jour de l'affichage de l'heure
             snprintf(hour_text, sizeof(hour_text), "%d : %d", hour, minutes);
             
-                        
-            if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) { // Intervalle pour modifier la valeur du vent
+            // Intervalle pour modifier la valeur du vent
+            if (SDL_GetTicks() - lastWindUpdateTime >= windUpdateInterval) { 
                 create_wind();  // Créer un nouveau vent
                 lastWindUpdateTime = SDL_GetTicks();  // Mettre à jour le temps de la dernière mise à jour du vent
             }
@@ -291,10 +300,9 @@ int main(int argc, char* argv[])
             // Affiche les données (en texte) sur la fenêtre
             display_datas(rendu);
             // Dessin de la courbe de l'ensoleillement
-            draw_sun(rendu, sinusRect, amplitude, hour, sun,
-                moon, sunRect, moonRect);
+            draw_sun(rendu, sinusRect, amplitude, hour, sun,moon, sunRect, moonRect);
             
-            // Mettre à jour le décalage
+            // Mettre à jour le décalage pour la courbe d'ensoleillement
             offsetSin += 1;
             SDL_RenderPresent(rendu); // fin de la zone d'affichage
             SDL_Delay(16);
