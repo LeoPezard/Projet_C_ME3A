@@ -1,18 +1,17 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-/*
- * Auteurs : Léo Morin - Léo Pezard
- * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
- * Date : 20 janvier 2025
- * Description : Ce fichier contient :
- *  - les bibliothèques nécessaires au jeu
- *  - les constantes définies (DEFINE)
- *  - les énumérations (Enum)
- *  - les structures
- *  - les prototypages des fonctions regroupées par catégories
- *  - les variables externes
- */;
+/// Auteurs : Léo Morin - Léo Pezard
+/// Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
+/// Date : 20 janvier 2025
+/// Description : Ce fichier contient :
+///  - les bibliothèques nécessaires au jeu
+///  - les constantes définies (DEFINE)
+///  - les énumérations (Enum)
+///  - les structures
+///  - les prototypages des fonctions regroupées par catégories
+///  - les variables externes
+
 
 #include <SDL.h>
 #include <string.h>

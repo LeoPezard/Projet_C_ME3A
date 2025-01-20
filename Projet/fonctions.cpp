@@ -1,9 +1,7 @@
-/*
- * Auteurs : Léo Morin - Léo Pezard
- * Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
- * Date : 20 janvier 2025
- * Description : Ce fichier contenant les fonctions liées au jeu (données, calcul des valeurs, dessin sur le rendu...)
- */;
+/// Auteurs : Léo Morin - Léo Pezard
+/// Sujet : Jeu de gestion de centrales énergétiques en C - Polytech Marseille Mécanique énergétique
+/// Date : 20 janvier 2025
+/// Description : Ce fichier contenant les fonctions liées au jeu (données, calcul des valeurs, dessin sur le rendu...)
 
 
 #include "header.h"
