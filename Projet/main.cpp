@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     snprintf(message4, sizeof(message4), "");
 
     // Initialisation de données du jeu (intervalle = durée de temps en ms d'actualisation)
-    int temps = 0, tempsPrecedent = 0, intervalle = 20, direction = 1, eventTriggeredToday = 0, 
+    int temps = 0, tempsPrecedent = 0, intervalle = 10, direction = 1, eventTriggeredToday = 0, 
         offsetSin = 0, minutes = 0;
 
     int lastWindUpdateTime = 0, lastBatteryInterval = 0;  // Temps de la dernière mise à jour du vent
